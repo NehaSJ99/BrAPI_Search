@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrAPI Search Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        }
+        .filter-box {
+            flex: 1;
+            padding-right: 20px;
+            overflow-y: auto; /* Add scrollbar */
+            max-height: 300px; /* Limit height to enable scrollbar */
+            border-right: 1px solid #ccc; /* Add border on the right */
+        }
+        .search-container {
+            flex: 2;
+            text-align: center;
+        }
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 20px;
+            box-sizing: border-box; /* Ensures padding doesn't increase width */
+        }
+        .search-button {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+            box-sizing: border-box; /* Ensures padding doesn't increase width */
+        }
+        .search-button:hover {
+            background-color: #218838;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+        .searched-keyword {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .radio-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+        .radio-label {
+            margin-bottom: 8px;
+        }
+        .filters-heading {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form action="/search" method="post" onsubmit="return validateForm()" style="display: flex; flex: 1;">
+            <div class="filter-box">
+                <!-- Filter box content here -->
+                <h2 class="filters-heading">Datasets</h2>
+                <!-- Server checkboxes -->
+                <div class="radio-container">
+                    {% for title, info in server_info.items() %}
+                    <label class="radio-label">
+                        <input type="checkbox" name="servers[]" value="{{ title }}">
+                        {{ title }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="search-container">
+                <h1>BrAPI Search</h1>
+                <input type="text" id="searchBox" name="query" class="search-box" placeholder="Search...">
+                <button type="submit" class="search-button">Search</button>
+                <p id="errorMessage" class="error-message">Please enter a search query.</p>
+                <div id="searchedKeyword" class="searched-keyword"></div>
+            </div>
+        </form>
+    </div>
+    <script>
+        function validateForm() {
+            const searchBox = document.getElementById('searchBox');
+            const errorMessage = document.getElementById('errorMessage');
+            if (searchBox.value.trim() === '') {
+                errorMessage.style.display = 'block';
+                return false;
+            }
+            errorMessage.style.display = 'none';
+            return true;
+        }
+    </script>
+</body>
+</html>

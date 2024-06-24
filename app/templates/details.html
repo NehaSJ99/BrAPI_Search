@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+        }
+        .details-container {
+            width: 80%;
+            max-width: 600px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            margin-top: 20px;
+        }
+        .highlight {
+            background-color: #ffffcc; /* Light yellow background for subtle highlighting */
+            border-radius: 4px;
+            padding: 2px;
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        .detail-item strong {
+            text-align: right;
+            padding-right: 20px;
+            box-sizing: border-box;
+        }
+        .detail-item span {
+            width: 55%;
+            text-align: left;
+            padding-left: 20px;
+            box-sizing: border-box;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            text-align: center;
+            width: 150px;
+            transition: background-color 0.3s ease;
+            margin: 20px auto 0;
+        }
+        .back-link:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="details-container">
+        <h1>Sample Details</h1>
+        {% for key, value in sample.items() %}
+            {% if value %}
+                <div class="detail-item">
+                    <strong>{{ key }}</strong>
+                    <span class="detail-value">{{ value }}</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <a href="/" class="back-link">Back to Search Results</a>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const query = "{{ query|e }}";
+            if (query) {
+                const elements = document.querySelectorAll(".detail-value");
+                elements.forEach(element => {
+                    const innerHTML = element.innerHTML;
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    element.innerHTML = innerHTML.replace(regex, '<span class="highlight">$1</span>');
+                });
+            }
+
+            // Make URLs clickable
+            const urlPattern = /https?:\/\/[^\s]+/g;
+            const elements = document.querySelectorAll(".detail-value");
+            elements.forEach(element => {
+                element.innerHTML = element.innerHTML.replace(urlPattern, url => `<a href="${url}" target="_blank">${url}</a>`);
+            });
+        });
+    </script>
+</body>
+</html>

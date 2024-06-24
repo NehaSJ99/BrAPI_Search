@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .results-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .result-count {
+            margin-bottom: 10px;
+        }
+        .results-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .results-list li {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .results-list li a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+        .results-list li a:hover {
+            background-color: #e0e0e0;
+            color: #000;
+        }
+        .highlight {
+            color: #996515; /* Dark yellow-brown color for font */
+            font-weight: bold;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            text-align: center;
+            width: 150px;
+            margin: 20px auto;
+            transition: background-color 0.3s ease;
+        }
+        .back-link:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="results-container">
+        <h1>Search Results</h1>
+        <p>You searched for: <strong>{{ query }}</strong></p>
+        {% if results %}
+            <p class="result-count">{{ results|length }} sample(s) found</p>
+            {% set grouped_results = {} %}
+            {% for sample in results %}
+                {% set server_name = sample.server_name %}
+                {% if server_name not in grouped_results %}
+                    {% set _ = grouped_results.update({server_name: []}) %}
+                {% endif %}
+                {% set _ = grouped_results[server_name].append(sample) %}
+            {% endfor %}
+
+            {% for server_name, samples in grouped_results.items() %}
+                <h2>Results from {{ server_name }}</h2>
+                <ul class="results-list">
+                {% for sample in samples %}
+                    <li>
+                        <a href="{{ url_for('main.details', germplasm_id=sample.germplasmDbId, base_url=sample.base_url) }}">
+                            <span class="highlight">{{ sample.defaultDisplayName }}</span> ({{ sample.species }})
+                        </a>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% endfor %}
+        {% else %}
+            <p>No samples found.</p>
+        {% endif %}
+        <a href="/" class="back-link">Back to Search</a>
+    </div>
+</body>
+</html>
