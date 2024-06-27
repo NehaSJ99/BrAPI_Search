@@ -71,14 +71,14 @@
         <h1>Search Results</h1>
         <p>You searched for: <strong>{{ query }}</strong></p>
         {% if results %}
-            <p class="result-count">{{ results|length }} sample(s) found</p>
+            <p class="result-count">{{ results|length }} result(s) found</p>
             {% set grouped_results = {} %}
-            {% for sample in results %}
-                {% set server_name = sample.server_name %}
+            {% for result in results %}
+                {% set server_name = result.server_name %}
                 {% if server_name not in grouped_results %}
                     {% set _ = grouped_results.update({server_name: []}) %}
                 {% endif %}
-                {% set _ = grouped_results[server_name].append(sample) %}
+                {% set _ = grouped_results[server_name].append(result) %}
             {% endfor %}
 
             {% for server_name, samples in grouped_results.items() %}
@@ -86,15 +86,25 @@
                 <ul class="results-list">
                 {% for sample in samples %}
                     <li>
-                        <a href="{{ url_for('main.details', germplasm_id=sample.germplasmDbId, base_url=sample.base_url) }}">
-                            <span class="highlight">{{ sample.defaultDisplayName }}</span> ({{ sample.species }})
-                        </a>
+                        {% if sample.germplasmDbId %}
+                            <a href="{{ url_for('main.details', detail_type='germplasm', detail_id=sample.germplasmDbId, base_url=sample.base_url) }}">
+                                <span class="highlight">{{ sample.defaultDisplayName }}</span> ({{ sample.species }})
+                            </a>
+                        {% elif sample.traitDbId %}
+                            <a href="{{ url_for('main.details', detail_type='trait', detail_id=sample.traitDbId, base_url=sample.base_url) }}">
+                                <span class="highlight">{{ sample.traitName }}</span> (Trait ID: {{ sample.traitDbId }})
+                            </a>
+                        {% elif sample.trialDbId %}
+                            <a href="{{ url_for('main.details', detail_type='trial', detail_id=sample.trialDbId, base_url=sample.base_url) }}">
+                                <span class="highlight">{{ sample.trialName }}</span> (Trial ID: {{ sample.trialDbId }})
+                            </a>
+                        {% endif %}
                     </li>
                 {% endfor %}
                 </ul>
             {% endfor %}
         {% else %}
-            <p>No samples found.</p>
+            <p>No results found.</p>
         {% endif %}
         <a href="/" class="back-link">Back to Search</a>
     </div>

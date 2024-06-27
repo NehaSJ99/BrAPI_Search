@@ -102,26 +102,77 @@
                     </label>
                     {% endfor %}
                 </div>
+
+                <!-- Search for Filter -->
+                <h2 class="filters-heading">Search for</h2>
+                <div class="radio-container">
+                    <label class="radio-label">
+                        <input type="checkbox" name="search_for" value="germplasm" class="single-checkbox">
+                        Germplasm
+                    </label>
+                    <label class="radio-label">
+                        <input type="checkbox" name="search_for" value="traits" class="single-checkbox">
+                        Traits
+                    </label>
+                    <label class="radio-label">
+                        <input type="checkbox" name="search_for" value="trials" class="single-checkbox">
+                        Trials
+                    </label>
+                </div>
             </div>
             <div class="search-container">
                 <h1>BrAPI Search</h1>
-                <input type="text" id="searchBox" name="query" class="search-box" placeholder="Search...">
+                <input type="text" id="searchBox" name="query" class="search-box" placeholder="germplasmName, germplasmDbId, traits, trials">
                 <button type="submit" class="search-button">Search</button>
-                <p id="errorMessage" class="error-message">Please enter a search query.</p>
+                <p id="errorQuery" class="error-message">Please enter a search query.</p>
+                <p id="errorCheckbox" class="error-message">Please select at least one database.</p>
+                <p id="errorRadio" class="error-message">Please select a search category.</p>
                 <div id="searchedKeyword" class="searched-keyword"></div>
             </div>
         </form>
     </div>
     <script>
+        // Ensure only one checkbox can be selected at a time
+        document.querySelectorAll('.single-checkbox').forEach((checkbox) => {
+            checkbox.addEventListener('change', function() {
+                document.querySelectorAll('.single-checkbox').forEach((cb) => {
+                    if (cb !== checkbox) cb.checked = false;
+                });
+            });
+        });
+
         function validateForm() {
             const searchBox = document.getElementById('searchBox');
-            const errorMessage = document.getElementById('errorMessage');
+            const errorQuery = document.getElementById('errorQuery');
+            const errorCheckbox = document.getElementById('errorCheckbox');
+            const errorRadio = document.getElementById('errorRadio');
+            const checkboxes = document.querySelectorAll('input[name="servers[]"]:checked');
+            const radios = document.querySelectorAll('input[name="search_for"]:checked');
+            
+            let valid = true;
+
             if (searchBox.value.trim() === '') {
-                errorMessage.style.display = 'block';
-                return false;
+                errorQuery.style.display = 'block';
+                valid = false;
+            } else {
+                errorQuery.style.display = 'none';
             }
-            errorMessage.style.display = 'none';
-            return true;
+
+            if (checkboxes.length === 0) {
+                errorCheckbox.style.display = 'block';
+                valid = false;
+            } else {
+                errorCheckbox.style.display = 'none';
+            }
+
+            if (radios.length === 0) {
+                errorRadio.style.display = 'block';
+                valid = false;
+            } else {
+                errorRadio.style.display = 'none';
+            }
+
+            return valid;
         }
     </script>
 </body>

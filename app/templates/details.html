@@ -72,7 +72,7 @@
 </head>
 <body>
     <div class="details-container">
-        <h1>Sample Details</h1>
+        <h1>{{ detail_type|capitalize }} Details</h1>
         {% for key, value in sample.items() %}
             {% if value %}
                 <div class="detail-item">
