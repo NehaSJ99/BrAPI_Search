@@ -33,6 +33,41 @@ def getGermplasmSearch(search_param, base_url):
 
     return searched_results
 
+def getGermplasmPedigree(germplasm_id, base_url):
+    print("In getGermplasmPedigree function...")
+    url = f"{base_url}/germplasm/{germplasm_id}/pedigree"
+    print(f'url : {url}')
+    try:
+        res = requests.get(url)
+        res.raise_for_status()
+        res_json = res.json()
+        samples = res_json.get('result', {})
+        if samples:
+            print(f'samples found : {samples}')
+
+        return samples
+    except requests.RequestException as e:
+        print(f"Error fetching pedigree information: {e}")
+        return None
+    
+    
+def getGermplasmProgeny(germplasm_id, base_url):
+    print("In getGermplasmProgeny function...")
+    url = f"{base_url}/germplasm/{germplasm_id}/progeny"
+    print(f'url : {url}')
+    try:
+        res = requests.get(url)
+        res.raise_for_status()
+        res_json = res.json()
+        samples = res_json.get('result', {})
+        if samples:
+            print(f'samples found : {samples}')
+
+        return samples
+    except requests.RequestException as e:
+        print(f"Error fetching pedigree information: {e}")
+        return None
+
 def search_trait(trait_id, base_url):
     print(f'trait id : {trait_id}, base_url : {base_url}')
     url = f"{base_url}traits/{trait_id}"

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progeny Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+        }
+        .progeny-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .progeny-item {
+            margin-bottom: 10px;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            text-align: center;
+            width: 150px;
+            transition: background-color 0.3s ease;
+            margin: 20px auto 0;
+        }
+        .back-link:hover {
+            background-color: #218838;
+        }
+        .highlight {
+            color: #996515;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class=".progeny-container">
+        <h1>Germplasm progeny</h1>
+        {% if progeny %}
+            {% for key, value in progeny.items() %}
+                <div class="progeny-item">
+                    <strong>{{ key }}:</strong> <span>{{ value }}</span>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No progeny information available.</p>
+        {% endif %}
+        <a href="/" class="back-link">Back to Search</a>
+    </div>
+</body>
+</html>

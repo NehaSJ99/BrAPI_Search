@@ -1,5 +1,5 @@
 from flask import request, render_template, Blueprint
-from .BrAPIClientService import getGermplasmSearch, search_trait, search_trial
+from .BrAPIClientService import getGermplasmSearch, search_trait, search_trial, getGermplasmPedigree, getGermplasmProgeny
 from .BrAPIs import fetch_server_apis
 
 main = Blueprint("main", __name__)
@@ -55,6 +55,10 @@ def details(detail_type, detail_id):
         if detail_type == "germplasm":
             searched_results_germplasm = getGermplasmSearch(detail_id, base_url)
             if searched_results_germplasm:
+                for result in searched_results_germplasm:
+                    if result:  # Check if result is not None
+                        result['base_url'] = base_url  # Ensure base_url is set for each result
+                searched_results_germplasm.extend(result)
                 return render_template("details.html", sample=searched_results_germplasm[0], detail_type=detail_type)
             
         elif detail_type == "trait":
@@ -67,3 +71,26 @@ def details(detail_type, detail_id):
         if searched_results:
             return render_template("details.html", sample=searched_results, detail_type=detail_type)
     return "Sample not found", 404
+
+@main.route("/germplasm/<germplasm_id>/pedigree")
+def germplasm_pedigree(germplasm_id):
+    print("In the germplasm_pedigree route...")
+    base_url = request.args.get("base_url")
+    print(f'bas url for pefigree : {base_url}')
+    if germplasm_id and base_url:
+        pedigree_info = getGermplasmPedigree(germplasm_id, base_url)
+        #print(f'pedigree_info : {pedigree_info}')
+        if pedigree_info:
+            return render_template("pedigree.html", pedigree=pedigree_info)
+    return "Pedigree information not found", 404
+
+@main.route("/germplasm/<germplasm_id>/progeny")
+def germplasm_progeny(germplasm_id):
+    print("In the germplasm_progeny route...")
+    base_url = request.args.get("base_url")
+    print(f'bas url for progeny : {base_url}')
+    if germplasm_id and base_url:
+        progeny_info = getGermplasmProgeny(germplasm_id, base_url)
+        if progeny_info:
+            return render_template("progeny.html", progeny=progeny_info)
+    return "Pedigree information not found", 404

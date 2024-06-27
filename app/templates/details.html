@@ -52,7 +52,7 @@
             padding-left: 20px;
             box-sizing: border-box;
         }
-        .back-link {
+        .back-link, .pedigree-link, .progeny-link {
             display: block;
             margin-top: 20px;
             padding: 10px 20px;
@@ -65,14 +65,20 @@
             transition: background-color 0.3s ease;
             margin: 20px auto 0;
         }
-        .back-link:hover {
+        .pedigree-link,.progeny-link {
+            background-color: #007bff;
+        }
+        .back-link:hover, .pedigree-link:hover , .progeny-link:hover {
             background-color: #218838;
+        }
+        .pedigree-link:hover, .progeny-link:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="details-container">
-        <h1>{{ detail_type|capitalize }} Details</h1>
+        <h1>Sample Details</h1>
         {% for key, value in sample.items() %}
             {% if value %}
                 <div class="detail-item">
@@ -81,6 +87,10 @@
                 </div>
             {% endif %}
         {% endfor %}
+        {% if sample.germplasmDbId %}
+            <a href="{{ url_for('main.germplasm_pedigree', germplasm_id=sample.germplasmDbId, base_url=sample.base_url) }}" class="pedigree-link">Check Pedigree</a>
+            <a href="{{ url_for('main.germplasm_progeny', germplasm_id=sample.germplasmDbId, base_url=sample.base_url) }}" class="progeny-link">Check Progeny</a>
+        {% endif %}
         <a href="/" class="back-link">Back to Search Results</a>
     </div>
 

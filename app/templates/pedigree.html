@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Germplasm Pedigree</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .pedigree-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .pedigree-item {
+            margin-bottom: 10px;
+        }
+        .highlight {
+            color: #996515;
+            font-weight: bold;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            text-align: center;
+            width: 150px;
+            margin: 20px auto;
+            transition: background-color 0.3s ease;
+        }
+        .back-link:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="pedigree-container">
+        <h1>Germplasm Pedigree</h1>
+        {% if pedigree %}
+            {% for key, value in pedigree.items() %}
+                <div class="pedigree-item">
+                    <strong>{{ key }}:</strong> <span>{{ value }}</span>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No pedigree information available.</p>
+        {% endif %}
+        <a href="/" class="back-link">Back to Search</a>
+    </div>
+</body>
+</html>
