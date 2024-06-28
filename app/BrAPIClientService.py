@@ -75,12 +75,16 @@ def search_trait(trait_id, base_url):
     try:
         res = requests.get(url)
         res.raise_for_status()
-        res_json = res.json()
-        samples = res_json.get('result', {})
-        if samples:
-            print(f'samples found : {samples}')
+        if res.status_code == 200:
+            res_json = res.json()
+            samples = res_json.get('result', {})
+            if samples:
+                print(f'samples found : {samples}')
 
-        return samples
+            return samples
+        else:
+            print(f"Error fetching trait: {res.status_code} {res.reason}")
+            return None
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching trait: {e}")
@@ -92,12 +96,17 @@ def search_trial(trialDbId, base_url):
     try:
         res = requests.get(url)
         res.raise_for_status()
-        res_json = res.json()
-        samples = res_json.get('result', {})
-        if samples:
-            print(f'samples found : {samples}')
+        if res.status_code == 200:
+            res_json = res.json()
+            samples = res_json.get('result', {})
+            if samples:
+                print(f'samples found : {samples}')
 
-        return samples
+            return samples
+        else:
+            print(f"Error fetching trait: {res.status_code} {res.reason}")
+            return None
+
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching trial search result: {e}")
+        print(f"Error fetching trait: {e}")
         return None

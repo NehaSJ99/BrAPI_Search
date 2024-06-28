@@ -34,7 +34,7 @@ def search():
             else:
                 results = []
 
-            if results:
+            if len(results) > 0:
                 for result in results:
                     if result:  # Check if result is not None
                         result['server_name'] = server  # Add server name to each result
@@ -42,8 +42,10 @@ def search():
                 searched_results.extend(results)
                 print(f'searched_results : {searched_results}')
 
-    return render_template("results.html", query=search_param, results=searched_results)
-
+    if searched_results and searched_results[0] is not None:
+        return render_template("results.html", query=search_param, results=searched_results)
+    else:
+        return "No results found", 404
 
 @main.route("/details/<string:detail_type>/<string:detail_id>")
 def details(detail_type, detail_id):
