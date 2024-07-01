@@ -30,8 +30,12 @@ def getGermplasmSearch(search_param, base_url):
     except requests.exceptions.HTTPError as e:
         print(f"HTTP Error occurred: {e}")
         # Handle specific HTTP error codes if necessary
+    # Clean the searched results before returning
+    cleaned_results = clean_data(searched_results)
+    print(f"Searched Results: {cleaned_results}")
+    
+    return cleaned_results
 
-    return searched_results
 
 def getGermplasmPedigree(germplasm_id, base_url):
     print("In getGermplasmPedigree function...")
@@ -43,9 +47,11 @@ def getGermplasmPedigree(germplasm_id, base_url):
         res_json = res.json()
         samples = res_json.get('result', {})
         if samples:
-            print(f'samples found : {samples}')
+            print(f'samples found')
+            cleaned_results = clean_data(samples)
+            print(f"Searched Results: {cleaned_results}")
+        return cleaned_results
 
-        return samples
     except requests.RequestException as e:
         print(f"Error fetching pedigree information: {e}")
         return None
@@ -61,9 +67,11 @@ def getGermplasmProgeny(germplasm_id, base_url):
         res_json = res.json()
         samples = res_json.get('result', {})
         if samples:
-            print(f'samples found : {samples}')
+            print(f'samples found')
+            cleaned_results = clean_data(samples)
+            print(f"Searched Results: {cleaned_results}")
+        return cleaned_results
 
-        return samples
     except requests.RequestException as e:
         print(f"Error fetching pedigree information: {e}")
         return None
@@ -79,7 +87,7 @@ def search_trait(trait_id, base_url):
             res_json = res.json()
             samples = res_json.get('result', {})
             if samples:
-                print(f'samples found : {samples}')
+                print(f'samples found')
 
             return samples
         else:
@@ -100,7 +108,7 @@ def search_trial(trialDbId, base_url):
             res_json = res.json()
             samples = res_json.get('result', {})
             if samples:
-                print(f'samples found : {samples}')
+                print(f'samples found')
 
             return samples
         else:
@@ -110,3 +118,20 @@ def search_trial(trialDbId, base_url):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching trait: {e}")
         return None
+
+
+def clean_data(data):
+    """
+    Recursively remove attributes with values that are None, Null, NA, 'NA/NA', or empty.
+    """
+    na_values = [None, 'unknown', 'None', 'null', 'NA', 'NA/NA', '', [], {}, 0]
+    
+    if isinstance(data, list):
+        cleaned_list = [clean_data(item) for item in data if item not in na_values]
+        return [item for item in cleaned_list if item]
+    elif isinstance(data, dict):
+        cleaned_dict = {key: clean_data(value) for key, value in data.items() if value not in na_values}
+        return {key: value for key, value in cleaned_dict.items() if value}
+    else:
+        return data
+

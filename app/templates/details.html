@@ -80,7 +80,7 @@
     <div class="details-container">
         <h1>Sample Details</h1>
         {% for key, value in sample.items() %}
-            {% if value %}
+            {% if value and key != 'base_url' %}
                 <div class="detail-item">
                     <strong>{{ key }}</strong>
                     <span class="detail-value">{{ value }}</span>
