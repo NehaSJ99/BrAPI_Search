@@ -28,7 +28,7 @@ def search():
                 results = getGermplasmSearch(search_param, base_url)
             elif search_for == "traits":
                 results = [search_trait(search_param, base_url)]
-                print(f'results : {results}')
+                #print(f'results : {results}')
             elif search_for == "trials":
                 results = [search_trial(search_param, base_url)]
             else:
@@ -40,7 +40,7 @@ def search():
                         result['server_name'] = server  # Add server name to each result
                         result['base_url'] = base_url  # Ensure base_url is set for each result
                 searched_results.extend(results)
-                print(f'searched_results : {searched_results}')
+                #print(f'searched_results : {searched_results}')
 
     if searched_results and searched_results[0] is not None:
         return render_template("results.html", query=search_param, results=searched_results)
@@ -49,10 +49,10 @@ def search():
 
 @main.route("/details/<string:detail_type>/<string:detail_id>")
 def details(detail_type, detail_id):
-    print(f'In details....')
+    #print(f'In details....')
     print(detail_type, detail_id)
     base_url = request.args.get("base_url")
-    print(f'Printitng base_url : {base_url}')
+    #print(f'Printitng base_url : {base_url}')
     if detail_type and detail_id and base_url:
         if detail_type == "germplasm":
             searched_results_germplasm = getGermplasmSearch(detail_id, base_url)
@@ -72,13 +72,13 @@ def details(detail_type, detail_id):
 
         if searched_results:
             return render_template("details.html", sample=searched_results, detail_type=detail_type)
-    return "Sample not found", 404
+    return "Sample not found", 404 
 
 @main.route("/germplasm/<germplasm_id>/pedigree")
 def germplasm_pedigree(germplasm_id):
-    print("In the germplasm_pedigree route...")
+    #print("In the germplasm_pedigree route...")
     base_url = request.args.get("base_url")
-    print(f'bas url for pefigree : {base_url}')
+    #print(f'bas url for pefigree : {base_url}')
     if germplasm_id and base_url:
         pedigree_info = getGermplasmPedigree(germplasm_id, base_url)
         #print(f'pedigree_info : {pedigree_info}')
@@ -88,11 +88,12 @@ def germplasm_pedigree(germplasm_id):
 
 @main.route("/germplasm/<germplasm_id>/progeny")
 def germplasm_progeny(germplasm_id):
-    print("In the germplasm_progeny route...")
+    #print("In the germplasm_progeny route...")
     base_url = request.args.get("base_url")
-    print(f'bas url for progeny : {base_url}')
+    #print(f'bas url for progeny : {base_url}')
     if germplasm_id and base_url:
         progeny_info = getGermplasmProgeny(germplasm_id, base_url)
         if progeny_info:
+            print(f'Progeny info : {progeny_info}')
             return render_template("progeny.html", progeny=progeny_info)
     return "Pedigree information not found", 404

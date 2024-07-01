@@ -45,6 +45,19 @@
         .back-link:hover {
             background-color: #218838;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
@@ -52,9 +65,29 @@
         <h1>Germplasm Pedigree</h1>
         {% if pedigree %}
             {% for key, value in pedigree.items() %}
-                <div class="pedigree-item">
-                    <strong>{{ key }}:</strong> <span>{{ value }}</span>
-                </div>
+                {% if key == 'siblings' and value %}
+                    <h2>Siblings</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Germplasm Name</th>
+                                <th>Germplasm ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sibling in value %}
+                                <tr>
+                                    <td>{{ sibling.germplasmName }}</td>
+                                    <td>{{ sibling.germplasmDbId }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="pedigree-item">
+                        <strong>{{ key }}:</strong> <span>{{ value }}</span>
+                    </div>
+                {% endif %}
             {% endfor %}
         {% else %}
             <p>No pedigree information available.</p>

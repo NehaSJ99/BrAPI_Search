@@ -38,18 +38,18 @@ def getGermplasmSearch(search_param, base_url):
 
 
 def getGermplasmPedigree(germplasm_id, base_url):
-    print("In getGermplasmPedigree function...")
+    #print("In getGermplasmPedigree function...")
     url = f"{base_url}/germplasm/{germplasm_id}/pedigree"
-    print(f'url : {url}')
+    #print(f'url : {url}')
     try:
         res = requests.get(url)
         res.raise_for_status()
         res_json = res.json()
         samples = res_json.get('result', {})
         if samples:
-            print(f'samples found')
+            #print(f'samples found')
             cleaned_results = clean_data(samples)
-            print(f"Searched Results: {cleaned_results}")
+            #print(f"Searched Results: {cleaned_results}")
         return cleaned_results
 
     except requests.RequestException as e:
@@ -58,18 +58,18 @@ def getGermplasmPedigree(germplasm_id, base_url):
     
     
 def getGermplasmProgeny(germplasm_id, base_url):
-    print("In getGermplasmProgeny function...")
+    #print("In getGermplasmProgeny function...")
     url = f"{base_url}/germplasm/{germplasm_id}/progeny"
-    print(f'url : {url}')
+    #print(f'url : {url}')
     try:
         res = requests.get(url)
         res.raise_for_status()
         res_json = res.json()
         samples = res_json.get('result', {})
         if samples:
-            print(f'samples found')
+            #print(f'samples found')
             cleaned_results = clean_data(samples)
-            print(f"Searched Results: {cleaned_results}")
+            #print(f"Searched Results: {cleaned_results}")
         return cleaned_results
 
     except requests.RequestException as e:
@@ -77,9 +77,9 @@ def getGermplasmProgeny(germplasm_id, base_url):
         return None
 
 def search_trait(trait_id, base_url):
-    print(f'trait id : {trait_id}, base_url : {base_url}')
+    #print(f'trait id : {trait_id}, base_url : {base_url}')
     url = f"{base_url}traits/{trait_id}"
-    print(f'url:{url}')
+    #print(f'url:{url}')
     try:
         res = requests.get(url)
         res.raise_for_status()
