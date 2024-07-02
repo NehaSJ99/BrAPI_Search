@@ -9,11 +9,7 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 100vh;
+            padding: 20px;
         }
         .progeny-container {
             max-width: 800px;
@@ -22,12 +18,16 @@
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        h1, h2 {
+        h1 {
             text-align: center;
             margin-bottom: 20px;
         }
         .progeny-item {
             margin-bottom: 10px;
+        }
+        .highlight {
+            color: #996515;
+            font-weight: bold;
         }
         .back-link {
             display: block;
@@ -39,20 +39,17 @@
             border-radius: 4px;
             text-align: center;
             width: 150px;
+            margin: 20px auto;
             transition: background-color 0.3s ease;
-            margin: 20px auto 0;
         }
         .back-link:hover {
             background-color: #218838;
         }
-        .highlight {
-            color: #996515;
-            font-weight: bold;
-        }
     </style>
+    
 </head>
 <body>
-    <div class=".progeny-container">
+    <div class="progeny-container">
         <h1>Germplasm progeny</h1>
         {% if progeny %}
             {% for key, value in progeny.items() %}

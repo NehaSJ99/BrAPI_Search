@@ -51,4 +51,4 @@ def fetch_server_apis(url='https://brapi.org/servers'):
 
 if __name__ == '__main__':
     server_info = fetch_server_apis()
-    print(server_info)
+    #print(server_info)
