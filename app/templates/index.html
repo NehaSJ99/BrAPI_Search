@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #fafafa;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -30,9 +30,6 @@
         .filter-box {
             flex: 1;
             padding-right: 20px;
-            overflow-y: auto; /* Add scrollbar */
-            max-height: 300px; /* Limit height to enable scrollbar */
-            border-right: 1px solid #ccc; /* Add border on the right */
         }
         .search-container {
             flex: 2;
@@ -67,23 +64,27 @@
             margin-top: 10px;
             display: none;
         }
-        .searched-keyword {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-        .radio-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin-top: 20px;
-        }
-        .radio-label {
-            margin-bottom: 8px;
+        .filters-section {
+            margin-bottom: 20px;
         }
         .filters-heading {
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 10px;
+        }
+        .checkbox-container, .radio-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .checkbox-label, .radio-label {
+            margin-bottom: 8px;
+        }
+        .datasets-container, .searchfor-container {
+            max-height: 300px; /* Limit height to enable scrollbar */
+            overflow-y: auto; /* Add scrollbar */
+            border: 1px solid #ccc;
+            padding: 10px;
         }
     </style>
 </head>
@@ -91,33 +92,37 @@
     <div class="container">
         <form action="/search" method="post" onsubmit="return validateForm()" style="display: flex; flex: 1;">
             <div class="filter-box">
-                <!-- Filter box content here -->
-                <h2 class="filters-heading">Datasets</h2>
-                <!-- Server checkboxes -->
-                <div class="radio-container">
-                    {% for title, info in server_info.items() %}
-                    <label class="radio-label">
-                        <input type="checkbox" name="servers[]" value="{{ title }}">
-                        {{ title }}
-                    </label>
-                    {% endfor %}
+                <!-- Datasets Filter -->
+                <div class="filters-section">
+                    <h2 class="filters-heading">Datasets</h2>
+                    <div class="checkbox-container datasets-container">
+                        <!-- Server checkboxes -->
+                        {% for title, info in server_info|dictsort %}
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="servers[]" value="{{ title }}">
+                            {{ title }}
+                        </label>
+                        {% endfor %}
+                    </div>
                 </div>
 
                 <!-- Search for Filter -->
-                <h2 class="filters-heading">Search for</h2>
-                <div class="radio-container">
-                    <label class="radio-label">
-                        <input type="checkbox" name="search_for" value="germplasm" class="single-checkbox">
-                        Germplasm
-                    </label>
-                    <label class="radio-label">
-                        <input type="checkbox" name="search_for" value="traits" class="single-checkbox">
-                        Traits
-                    </label>
-                    <label class="radio-label">
-                        <input type="checkbox" name="search_for" value="trials" class="single-checkbox">
-                        Trials
-                    </label>
+                <div class="filters-section">
+                    <h2 class="filters-heading">Search for</h2>
+                    <div class="radio-container searchfor-container">
+                        <label class="radio-label">
+                            <input type="radio" name="search_for" value="germplasm" class="single-radio">
+                            Germplasm
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="search_for" value="traits" class="single-radio">
+                            Traits
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="search_for" value="trials" class="single-radio">
+                            Trials
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="search-container">
@@ -125,18 +130,17 @@
                 <input type="text" id="searchBox" name="query" class="search-box" placeholder="germplasmName, germplasmDbId, traits, trials">
                 <button type="submit" class="search-button">Search</button>
                 <p id="errorQuery" class="error-message">Please enter a search query.</p>
-                <p id="errorCheckbox" class="error-message">Please select at least one database.</p>
+                <p id="errorCheckbox" class="error-message">Please select at least one dataset.</p>
                 <p id="errorRadio" class="error-message">Please select a search category.</p>
-                <div id="searchedKeyword" class="searched-keyword"></div>
             </div>
         </form>
     </div>
     <script>
-        // Ensure only one checkbox can be selected at a time
-        document.querySelectorAll('.single-checkbox').forEach((checkbox) => {
-            checkbox.addEventListener('change', function() {
-                document.querySelectorAll('.single-checkbox').forEach((cb) => {
-                    if (cb !== checkbox) cb.checked = false;
+        // Ensure only one radio button can be selected at a time
+        document.querySelectorAll('.single-radio').forEach((radio) => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.single-radio').forEach((rb) => {
+                    if (rb !== radio) rb.checked = false;
                 });
             });
         });

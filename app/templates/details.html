@@ -17,14 +17,17 @@
         }
         .details-container {
             width: 80%;
-            max-width: 600px;
+            max-width: 800px;
             background: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            overflow-wrap: break-word;
+            overflow-wrap: hidden;
             word-wrap: break-word;
             margin-top: 20px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            align-items: center;
         }
         .highlight {
             background-color: #ffffcc; /* Light yellow background for subtle highlighting */
@@ -40,17 +43,21 @@
             justify-content: space-between;
             margin-bottom: 10px;
             width: 100%;
+            align-items: center;
         }
         .detail-item strong {
             text-align: right;
             padding-right: 20px;
             box-sizing: border-box;
+            align-items: center;
         }
-        .detail-item span {
+        .detail-item, .detail-value  {
             width: 55%;
             text-align: left;
             padding-left: 20px;
             box-sizing: border-box;
+            align-items: center;
+            justify-content: space-between;
         }
         .back-link, .pedigree-link, .progeny-link {
             display: block;
@@ -79,7 +86,7 @@
 <body>
     <div class="details-container">
         <h1>Sample Details</h1>
-        {% for key, value in sample.items() %}
+        {% for key, value in sample|dictsort %}
             {% if value and key != 'base_url' %}
                 <div class="detail-item">
                     <strong>{{ key }}</strong>
