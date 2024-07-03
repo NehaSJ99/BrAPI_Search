@@ -25,25 +25,32 @@ def search():
     logging.info(f"Search For: {search_for}")
 
     searched_results = []
-    for server in selected_servers:
-        server_info = fetch_server_apis()
-        base_url = server_info.get(server, {}).get('api-urls', [])[0] if server in server_info else ''
-        if base_url:
-            if search_for == "germplasm":
-                results = getGermplasmSearch(search_param, base_url)
-            elif search_for == "traits":
-                results = [search_trait(search_param, base_url)]
-            elif search_for == "trials":
-                results = [search_trial(search_param, base_url)]
-            else:
-                results = []
-
-            if results:
-                for result in results:
-                    if result:  # Check if result is not None
-                        result['server_name'] = server  # Add server name to each result
-                        result['base_url'] = base_url  # Ensure base_url is set for each result
-                searched_results.extend(results)
+    server_info = fetch_server_apis()
+    if server_info:
+        for server in selected_servers:
+            logging.info(f"Into the server : {server}")
+            base_url = server_info.get(server, {}).get('api-urls', [])[0] if server in server_info else ''
+            if base_url:
+                logging.info(f"Base url found for {server} : {base_url}")
+                if search_for == "germplasm":
+                    results = getGermplasmSearch(search_param, base_url)
+                elif search_for == "traits":
+                    results = [search_trait(search_param, base_url)]
+                elif search_for == "trials":
+                    results = [search_trial(search_param, base_url)]
+                else:
+                    results = []
+                    
+                if len(results) > 0 and results[0] != None:
+                    for result in results:
+                        if result:  # Check if result is not None
+                            result['server_name'] = server  # Add server name to each result
+                            result['base_url'] = base_url  # Ensure base_url is set for each result
+                    searched_results.extend(results)
+                else:
+                    print(f"Warning: No base URL found for server: {server}")
+    else:
+        logging.warning("Server Info Not found")
 
     if searched_results:
         logging.info(f"Search Results found for : {search_param}")
@@ -51,7 +58,7 @@ def search():
         return render_template("results.html", query=search_param, results=searched_results)
     else:
         logging.warning("No results found")
-        return "No results found", 404
+        return render_template('404.html'), 404
 
 @main.route("/details/<string:detail_type>/<string:detail_id>")
 def details(detail_type, detail_id):

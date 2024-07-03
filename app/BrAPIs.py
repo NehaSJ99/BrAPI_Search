@@ -21,6 +21,10 @@ def get_server_info(soup):
         title_tag = server.find('h2', class_='server-title')
         if title_tag:
             server_title = title_tag.text.strip()
+            if '.' in server_title:
+                server_title = server_title.split('.')[0]
+            if '(' in server_title:
+                server_title = server_title.split('(')[0]
             
             # Extract the API URLs
             api_urls = []
@@ -40,14 +44,20 @@ def get_server_info(soup):
                 'api-urls': api_urls,
                 'auth-required': auth_required
             }
-    
-    return server_info
+    #print(len(server_info))
+    filtered_server_info = filter_server_info(server_info)
+    #print(len(filtered_server_info))
+    return filtered_server_info
 
 def fetch_server_apis(url='https://brapi.org/servers'):
     soup = fetch_and_parse_html(url)
     if soup:
         return get_server_info(soup)
     return {}
+
+def filter_server_info(server_info):
+    filtered_server_info = {key: value for key, value in server_info.items() if value['api-urls']}
+    return filtered_server_info
 
 if __name__ == '__main__':
     server_info = fetch_server_apis()
