@@ -63,8 +63,19 @@ def details(detail_type, detail_id):
             searched_results_germplasm = getGermplasmSearch(detail_id, base_url)
             if searched_results_germplasm:
                 for result in searched_results_germplasm:
-                    if result:  # Check if result is not None
-                        result['base_url'] = base_url  # Ensure base_url is set for each result
+                    result['base_url'] = base_url  # Ensure base_url is set for each result
+                    pedigree_info = getGermplasmPedigree(detail_id, base_url)
+                    if pedigree_info.get('siblings'):
+                        result['pedigree'] = 'Yes'
+                    else:
+                        result['pedigree'] = 'No'
+
+                    progeny_info = getGermplasmProgeny(detail_id, base_url)
+                    if progeny_info.get('progeny'):
+                        result['progeny'] = 'Yes'
+                    else:
+                        result['progeny'] = 'No'
+
                 logging.info(f"Germplasm Details found for : {detail_id}")
                 logging.info("3. Displaying details on Details page")
                 return render_template("details.html", sample=searched_results_germplasm[0], detail_type=detail_type)
