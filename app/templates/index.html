@@ -20,7 +20,7 @@
             flex-direction: row;
             justify-content: space-between;
             align-items: flex-start;
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
             background-color: white;
             border: 1px solid #ccc;
@@ -41,8 +41,8 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            margin-top: 20px;
-            box-sizing: border-box; /* Ensures padding doesn't increase width */
+            margin-top: 1px;
+            box-sizing: border-box;
         }
         .search-button {
             width: 100%;
@@ -54,7 +54,7 @@
             color: white;
             cursor: pointer;
             margin-top: 10px;
-            box-sizing: border-box; /* Ensures padding doesn't increase width */
+            box-sizing: border-box;
         }
         .search-button:hover {
             background-color: #218838;
@@ -81,10 +81,56 @@
             margin-bottom: 8px;
         }
         .datasets-container, .searchfor-container {
-            max-height: 300px; /* Limit height to enable scrollbar */
-            overflow-y: auto; /* Add scrollbar */
+            max-height: 200px;
+            overflow-y: auto;
             border: 1px solid #ccc;
+            padding: 5px;
+        }
+        .selected-filters {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .filter-tag {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            padding: 4px 8px;
+            margin: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .filter-tag span {
+            margin-right: 8px;
+        }
+        .filter-tag button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+        }
+        .keyword-search {
+            width: 100%;
             padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            box-sizing: border-box;
+        }
+        .clear-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+        .clear-button:hover {
+            background-color: #c82333;
+        }
+        .clear-button {
+            display: none;
         }
     </style>
 </head>
@@ -94,39 +140,43 @@
             <div class="filter-box">
                 <!-- Datasets Filter -->
                 <div class="filters-section">
-                    <h2 class="filters-heading">Datasets</h2>
-                    <div class="checkbox-container datasets-container">
+                    <h2 class="filters-heading">Database</h2>
+                    <input type="text" class="keyword-search" id="datasetSearch" placeholder="Search database...">
+                    <div class="selected-filters" id="selectedFilters"></div> <!-- Move selected filters here -->
+                    <div class="checkbox-container datasets-container" id="datasetContainer">
                         <!-- Server checkboxes -->
                         {% for title, info in server_info|dictsort %}
                         <label class="checkbox-label">
-                            <input type="checkbox" name="servers[]" value="{{ title }}">
+                            <input type="checkbox" name="servers[]" value="{{ title }}" onclick="toggleFilter(event)">
                             {{ title }}
                         </label>
                         {% endfor %}
                     </div>
+                    <button type="button" class="clear-button" id="clearDatasets">Clear All</button>
                 </div>
 
                 <!-- Search for Filter -->
                 <div class="filters-section">
-                    <h2 class="filters-heading">Search for</h2>
-                    <div class="checkbox-container searchfor-container">
+                    <h2 class="filters-heading">Data Type</h2>
+                    <input type="text" class="keyword-search" id="searchForSearch" placeholder="Search Datatype...">
+                    <div class="checkbox-container searchfor-container" id="searchForContainer">
                         <label class="checkbox-label">
-                            <input type="checkbox" name="search_for" value="germplasm" class="single-radio">
+                            <input type="checkbox" name="search_for" value="germplasm" class="single-radio" onclick="toggleFilter(event)">
                             Germplasm
                         </label>
                         <label class="checkbox-label">
-                            <input type="checkbox" name="search_for" value="traits" class="single-radio">
+                            <input type="checkbox" name="search_for" value="traits" class="single-radio" onclick="toggleFilter(event)">
                             Traits
                         </label>
                         <label class="checkbox-label">
-                            <input type="checkbox" name="search_for" value="trials" class="single-radio">
+                            <input type="checkbox" name="search_for" value="trials" class="single-radio" onclick="toggleFilter(event)">
                             Trials
                         </label>
                     </div>
                 </div>
             </div>
             <div class="search-container">
-                <h1>BrAPI Search</h1>
+                <h2>BrAPI Search</h2>
                 <input type="text" id="searchBox" name="query" class="search-box" placeholder="germplasmName, germplasmDbId, traits, trials">
                 <button type="submit" class="search-button">Search</button>
                 <p id="errorQuery" class="error-message">Please enter a search query.</p>
@@ -177,6 +227,84 @@
             }
 
             return valid;
+        }
+
+        // Keyword search for Datasets
+        document.getElementById('datasetSearch').addEventListener('input', function() {
+            let filter = this.value.toLowerCase();
+            let labels = document.getElementById('datasetContainer').getElementsByTagName('label');
+            Array.from(labels).forEach(label => {
+                let text = label.textContent || label.innerText;
+                label.style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+            });
+        });
+
+        // Keyword search for Search for
+        document.getElementById('searchForSearch').addEventListener('input', function() {
+            let filter = this.value.toLowerCase();
+            let labels = document.getElementById('searchForContainer').getElementsByTagName('label');
+            Array.from(labels).forEach(label => {
+                let text = label.textContent || label.innerText;
+                label.style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+            });
+        });
+
+        // Clear all datasets
+        document.getElementById('clearDatasets').addEventListener('click', function() {
+            document.querySelectorAll('input[name="servers[]"]').forEach(cb => cb.checked = false);
+            updateSelectedFilters();
+        });
+
+        // Toggle filter tags
+        function toggleFilter(event) {
+            updateSelectedFilters();
+            updateClearButtonVisibility();
+        }
+
+        //clear button visibilty function
+        function updateClearButtonVisibility() {
+        const clearButton = document.getElementById('clearDatasets');
+        const selectedDatasets = document.querySelectorAll('input[name="servers[]"]:checked');
+        
+        if (selectedDatasets.length > 0) {
+            clearButton.style.display = 'block';
+        } else {
+            clearButton.style.display = 'none';
+        }
+}
+
+        // Update selected filters display
+        function updateSelectedFilters() {
+            const selectedFiltersContainer = document.getElementById('selectedFilters');
+            selectedFiltersContainer.innerHTML = '';
+
+            // Get selected datasets
+            const selectedDatasets = Array.from(document.querySelectorAll('input[name="servers[]"]:checked'))
+                .map(cb => cb.value);
+            selectedDatasets.forEach(dataset => {
+                addFilterTag(dataset, 'servers[]');
+            });
+            updateClearButtonVisibility();
+        }
+
+        // Add filter tag to display
+        function addFilterTag(filter, name) {
+            const selectedFiltersContainer = document.getElementById('selectedFilters');
+            const tag = document.createElement('div');
+            tag.className = 'filter-tag';
+            tag.innerHTML = `<span>${filter}</span> <button onclick="removeFilter('${filter}', '${name}')">&times;</button>`;
+            selectedFiltersContainer.appendChild(tag);
+        }
+
+        // Remove filter
+        function removeFilter(filter, name) {
+            const inputs = document.querySelectorAll(`input[name="${name}"]`);
+            inputs.forEach(input => {
+                if (input.value === filter) {
+                    input.checked = false;
+                }
+            });
+            updateSelectedFilters();
         }
     </script>
 </body>
