@@ -2,6 +2,7 @@ import requests
 
 def getGermplasmData(base_url):
     url = f"{base_url}/germplasm"
+    print(f'url:{url}')
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
@@ -11,8 +12,11 @@ def getGermplasmData(base_url):
         
         # Extract the relevant data
         germplasm_data = data.get('result', {}).get('data', [])
+
+        total_count = data.get('metadata', {}).get('pagination', {}).get('totalCount')
+        print(f'total count : {total_count}')
         
-        return germplasm_data
+        return germplasm_data,total_count
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching germplasm data: {e}")
@@ -63,15 +67,17 @@ if trial_search_result:
 '''
 # Usage
 base_url = "https://citrus.sgn.cornell.edu/brapi/v2"
-germplasm_data = getGermplasmData(base_url)
+germplasm_data, total_count = getGermplasmData(base_url)
+print(f'total_count : {total_count}')
 
-if germplasm_data:
-    germplasm_db_ids = extractGermplasmDbIds(germplasm_data)
-    count_germplasm_db_ids = len(germplasm_db_ids)
+
+# if germplasm_data:
+#     germplasm_db_ids = extractGermplasmDbIds(germplasm_data)
+#     count_germplasm_db_ids = len(germplasm_db_ids)
     
-    print(f"Total number of germplasmDbIds: {count_germplasm_db_ids}")
-    print("germplasmDbIds:")
-    for db_id in germplasm_db_ids:
-        print(db_id)
-else:
-    print("No germplasm data found or an error occurred.")
+#     print(f"Total number of germplasmDbIds: {count_germplasm_db_ids}")
+#     print("germplasmDbIds:")
+#     for db_id in germplasm_db_ids:
+#         print(db_id)
+# else:
+#     print("No germplasm data found or an error occurred.")

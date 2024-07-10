@@ -204,6 +204,13 @@
             const radios = document.querySelectorAll('input[name="search_for"]:checked');
             
             let valid = true;
+            const searchQuery = searchBox.value.trim();
+            const regex = /^[a-zA-Z0-9\s]+$/;
+
+            if (!regex.test(searchQuery)) {
+                alert('Invalid input. Only alphanumeric characters and spaces are allowed.');
+                event.preventDefault();
+            }
 
             if (searchBox.value.trim() === '') {
                 errorQuery.style.display = 'block';
