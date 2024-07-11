@@ -79,6 +79,42 @@
         }
         .checkbox-label, .radio-label {
             margin-bottom: 8px;
+            position: relative;
+            padding-left: 25px;
+        }
+        .checkbox-label input, .radio-label input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .checkbox-label .checkmark, .radio-label .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: #eee;
+            border-radius: 4px;
+        }
+        .checkbox-label input:checked ~ .checkmark, .radio-label input:checked ~ .checkmark {
+            background-color: #28a745;
+        }
+        .checkbox-label .checkmark:after, .radio-label .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        .checkbox-label input:checked ~ .checkmark:after, .radio-label input:checked ~ .checkmark:after {
+            display: block;
+        }
+        .checkbox-label .checkmark:after, .radio-label .checkmark:after {
+            left: 8px;
+            top: 4px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
         }
         .datasets-container, .searchfor-container {
             max-height: 200px;
@@ -138,7 +174,7 @@
     <div class="container">
         <form action="/search" method="post" onsubmit="return validateForm()" style="display: flex; flex: 1;">
             <div class="filter-box">
-                <!-- Datasets Filter -->
+                <!-- Databases Filter -->
                 <div class="filters-section">
                     <h2 class="filters-heading">Database</h2>
                     <input type="text" class="keyword-search" id="datasetSearch" placeholder="Search database...">
@@ -149,6 +185,7 @@
                         <label class="checkbox-label">
                             <input type="checkbox" name="servers[]" value="{{ title }}" onclick="toggleFilter(event)">
                             {{ title }}
+                            <span class="checkmark"></span>
                         </label>
                         {% endfor %}
                     </div>
@@ -163,14 +200,17 @@
                         <label class="checkbox-label">
                             <input type="checkbox" name="search_for" value="germplasm" class="single-radio" onclick="toggleFilter(event)">
                             Germplasm
+                            <span class="checkmark"></span>
                         </label>
                         <label class="checkbox-label">
                             <input type="checkbox" name="search_for" value="traits" class="single-radio" onclick="toggleFilter(event)">
                             Traits
+                            <span class="checkmark"></span>
                         </label>
                         <label class="checkbox-label">
                             <input type="checkbox" name="search_for" value="trials" class="single-radio" onclick="toggleFilter(event)">
                             Trials
+                            <span class="checkmark"></span>
                         </label>
                     </div>
                 </div>

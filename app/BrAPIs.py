@@ -68,7 +68,7 @@ def check_server_status(server_info):
         if len(server_info.get(server, {}).get('api-urls', [])) > 0:
             server_url = server_info.get(server, {}).get('api-urls', [])[0] if server in server_info else ''
             #print(server_url)
-            url = f"{server_url}serverinfo"
+            url = f"{server_url}germplasm"
             try:
                 res = requests.get(url)
                 #print(res.status_code)
