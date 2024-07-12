@@ -1,7 +1,9 @@
 import requests
 
 def getGermplasmData(base_url):
-    url = f"{base_url}/germplasm"
+    page = 0
+    pageSize = 38262
+    url = f"{base_url}/germplasm?page={page}&pageSize={pageSize}"
     print(f'url:{url}')
     try:
         response = requests.get(url)
@@ -12,6 +14,9 @@ def getGermplasmData(base_url):
         
         # Extract the relevant data
         germplasm_data = data.get('result', {}).get('data', [])
+
+        total_data_collected = len(germplasm_data)
+        print(total_data_collected)
 
         total_count = data.get('metadata', {}).get('pagination', {}).get('totalCount')
         print(f'total count : {total_count}')

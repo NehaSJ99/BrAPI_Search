@@ -6,38 +6,74 @@
     <title>BrAPI Search Page</title>
     <style>
         body {
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
             background-color: #fafafa;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
+            justify-content: flex-start;
         }
         .container {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: flex-start;
-            max-width: 900px;
-            width: 100%;
+            width: 100vw;
             background-color: white;
             border: 1px solid #ccc;
             padding: 20px;
             box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            margin-top: 80px; /* Ensure proper spacing from the fixed navbar */
+            box-sizing: border-box;
+}
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            color: white;
+            padding: 7px 7px; /* Adjusted padding to reduce overall width */
+            width: 100vw; /* Ensure it spans the entire viewport width */
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-sizing: content-box;
+        }
+
+        .navbar a {
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            padding: 10px 20px; /* Adjust padding to ensure links fit within the navbar */
+        }
+
+        .navbar-left,
+        .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-right {
+            justify-content: flex-end;
+            flex-wrap: wrap; /* Allows the items to wrap if they don't fit in one line */
+        }
+
+        .navbar a:hover {
+            background-color: #d6dbd7; /* Add a subtle hover effect for navbar links */
         }
         .filter-box {
-            flex: 1;
+            flex: 0 0 25%; /* 30% width */
             padding-right: 20px;
         }
         .search-container {
-            flex: 2;
+            flex: 0 0 75%; /* 70% width */
             text-align: center;
         }
         .search-box {
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -46,18 +82,18 @@
         }
         .search-button {
             width: 100%;
-            max-width: 400px;
+            max-width: 200px;
             padding: 10px 20px;
             border: none;
             border-radius: 4px;
-            background-color: #28a745;
+            background-color: #6fa2ff;
             color: white;
             cursor: pointer;
             margin-top: 10px;
             box-sizing: border-box;
         }
         .search-button:hover {
-            background-color: #218838;
+            background-color: #32aafa;
         }
         .error-message {
             color: red;
@@ -70,7 +106,6 @@
         .filters-heading {
             font-size: 1.2rem;
             font-weight: bold;
-            margin-bottom: 10px;
         }
         .checkbox-container, .radio-container {
             display: flex;
@@ -97,7 +132,7 @@
             border-radius: 4px;
         }
         .checkbox-label input:checked ~ .checkmark, .radio-label input:checked ~ .checkmark {
-            background-color: #28a745;
+            background-color: #6fa2ff;
         }
         .checkbox-label .checkmark:after, .radio-label .checkmark:after {
             content: "";
@@ -168,14 +203,31 @@
         .clear-button {
             display: none;
         }
+        .filter-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="#"><h3>BrAPI Search Tool</h3></a>
+        </div>
+        <div class="navbar-right">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </div>
+    </div>
     <div class="container">
         <form action="/search" method="post" onsubmit="return validateForm()" style="display: flex; flex: 1;">
             <div class="filter-box">
                 <!-- Databases Filter -->
-                <div class="filters-section">
+                <div class="filter-container">
                     <h2 class="filters-heading">Database</h2>
                     <input type="text" class="keyword-search" id="datasetSearch" placeholder="Search database...">
                     <div class="selected-filters" id="selectedFilters"></div> <!-- Move selected filters here -->
@@ -191,9 +243,9 @@
                     </div>
                     <button type="button" class="clear-button" id="clearDatasets">Clear All</button>
                 </div>
-
+    
                 <!-- Search for Filter -->
-                <div class="filters-section">
+                <div class="filter-container">
                     <h2 class="filters-heading">Data Type</h2>
                     <input type="text" class="keyword-search" id="searchForSearch" placeholder="Search Datatype...">
                     <div class="checkbox-container searchfor-container" id="searchForContainer">
@@ -215,18 +267,18 @@
                     </div>
                 </div>
             </div>
+    
             <div class="search-container">
-                <h2>BrAPI Search</h2>
                 <input type="text" id="searchBox" name="query" class="search-box" placeholder="germplasmName, germplasmDbId, traits, trials">
                 <button type="submit" class="search-button">Search</button>
                 <p id="errorQuery" class="error-message">Please enter a search query.</p>
-                <p id="errorCheckbox" class="error-message">Please select at least one dataset.</p>
-                <p id="errorRadio" class="error-message">Please select a search category.</p>
+                <p id="errorCheckbox" class="error-message">Please select at least one server.</p>
+                <p id="errorRadio" class="error-message">Please select a search option.</p>
             </div>
         </form>
     </div>
+
     <script>
-        // Ensure only one radio button can be selected at a time
         document.querySelectorAll('.single-radio').forEach((radio) => {
             radio.addEventListener('change', function() {
                 document.querySelectorAll('.single-radio').forEach((rb) => {
@@ -242,7 +294,7 @@
             const errorRadio = document.getElementById('errorRadio');
             const checkboxes = document.querySelectorAll('input[name="servers[]"]:checked');
             const radios = document.querySelectorAll('input[name="search_for"]:checked');
-            
+
             let valid = true;
             const searchQuery = searchBox.value.trim();
             const regex = /^[a-zA-Z0-9\s]+$/;
@@ -308,17 +360,17 @@
             updateClearButtonVisibility();
         }
 
-        //clear button visibilty function
+        // Clear button visibility function
         function updateClearButtonVisibility() {
-        const clearButton = document.getElementById('clearDatasets');
-        const selectedDatasets = document.querySelectorAll('input[name="servers[]"]:checked');
-        
-        if (selectedDatasets.length > 0) {
-            clearButton.style.display = 'block';
-        } else {
-            clearButton.style.display = 'none';
+            const clearButton = document.getElementById('clearDatasets');
+            const selectedDatasets = document.querySelectorAll('input[name="servers[]"]:checked');
+
+            if (selectedDatasets.length > 0) {
+                clearButton.style.display = 'block';
+            } else {
+                clearButton.style.display = 'none';
+            }
         }
-}
 
         // Update selected filters display
         function updateSelectedFilters() {
