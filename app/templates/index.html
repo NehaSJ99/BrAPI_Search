@@ -4,215 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrAPI Search Page</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #fafafa;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-        }
-        .container {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: flex-start;
-            width: 100vw;
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 20px;
-            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-            margin-top: 80px; /* Ensure proper spacing from the fixed navbar */
-            box-sizing: border-box;
-}
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #ffffff;
-            color: white;
-            padding: 7px 7px; /* Adjusted padding to reduce overall width */
-            width: 100vw; /* Ensure it spans the entire viewport width */
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            box-sizing: content-box;
-        }
-
-        .navbar a {
-            color: rgb(0, 0, 0);
-            text-decoration: none;
-            padding: 10px 20px; /* Adjust padding to ensure links fit within the navbar */
-        }
-
-        .navbar-left,
-        .navbar-right {
-            display: flex;
-            align-items: center;
-        }
-
-        .navbar-right {
-            justify-content: flex-end;
-            flex-wrap: wrap; /* Allows the items to wrap if they don't fit in one line */
-        }
-
-        .navbar a:hover {
-            background-color: #d6dbd7; /* Add a subtle hover effect for navbar links */
-        }
-        .filter-box {
-            flex: 0 0 25%; /* 30% width */
-            padding-right: 20px;
-        }
-        .search-container {
-            flex: 0 0 75%; /* 70% width */
-            text-align: center;
-        }
-        .search-box {
-            width: 100%;
-            max-width: 600px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-top: 1px;
-            box-sizing: border-box;
-        }
-        .search-button {
-            width: 100%;
-            max-width: 200px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: #6fa2ff;
-            color: white;
-            cursor: pointer;
-            margin-top: 10px;
-            box-sizing: border-box;
-        }
-        .search-button:hover {
-            background-color: #32aafa;
-        }
-        .error-message {
-            color: red;
-            margin-top: 10px;
-            display: none;
-        }
-        .filters-section {
-            margin-bottom: 20px;
-        }
-        .filters-heading {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        .checkbox-container, .radio-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .checkbox-label, .radio-label {
-            margin-bottom: 8px;
-            position: relative;
-            padding-left: 25px;
-        }
-        .checkbox-label input, .radio-label input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .checkbox-label .checkmark, .radio-label .checkmark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 20px;
-            width: 20px;
-            background-color: #eee;
-            border-radius: 4px;
-        }
-        .checkbox-label input:checked ~ .checkmark, .radio-label input:checked ~ .checkmark {
-            background-color: #6fa2ff;
-        }
-        .checkbox-label .checkmark:after, .radio-label .checkmark:after {
-            content: "";
-            position: absolute;
-            display: none;
-        }
-        .checkbox-label input:checked ~ .checkmark:after, .radio-label input:checked ~ .checkmark:after {
-            display: block;
-        }
-        .checkbox-label .checkmark:after, .radio-label .checkmark:after {
-            left: 8px;
-            top: 4px;
-            width: 5px;
-            height: 10px;
-            border: solid white;
-            border-width: 0 3px 3px 0;
-            transform: rotate(45deg);
-        }
-        .datasets-container, .searchfor-container {
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 5px;
-        }
-        .selected-filters {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .filter-tag {
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            padding: 4px 8px;
-            margin: 5px;
-            display: flex;
-            align-items: center;
-        }
-        .filter-tag span {
-            margin-right: 8px;
-        }
-        .filter-tag button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            line-height: 1;
-        }
-        .keyword-search {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-bottom: 5px;
-            box-sizing: border-box;
-        }
-        .clear-button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 10px;
-            cursor: pointer;
-            margin-top: 10px;
-            box-sizing: border-box;
-        }
-        .clear-button:hover {
-            background-color: #c82333;
-        }
-        .clear-button {
-            display: none;
-        }
-        .filter-container {
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <header id="header" class="clearfix" role="banner">
     <div class="navbar">
         <div class="navbar-left">
             <a href="#"><h3>BrAPI Search Tool</h3></a>
@@ -223,8 +18,9 @@
             <a href="#">Contact</a>
         </div>
     </div>
+</header>
     <div class="container">
-        <form action="/search" method="post" onsubmit="return validateForm()" style="display: flex; flex: 1;">
+        <form id="search-form" onsubmit="performSearch(event)" style="display: flex; flex: 1;">
             <div class="filter-box">
                 <!-- Databases Filter -->
                 <div class="filter-container">
@@ -269,142 +65,61 @@
             </div>
     
             <div class="search-container">
-                <input type="text" id="searchBox" name="query" class="search-box" placeholder="germplasmName, germplasmDbId, traits, trials">
-                <button type="submit" class="search-button">Search</button>
+                <div class="search-box-wrapper">
+                    <input type="text" id="searchBox" name="query" class="search-box" placeholder="germplasmName, germplasmDbId, traits, trials">
+                    <button type="submit" class="search-button">Search</button>
+                </div>
                 <p id="errorQuery" class="error-message">Please enter a search query.</p>
                 <p id="errorCheckbox" class="error-message">Please select at least one server.</p>
                 <p id="errorRadio" class="error-message">Please select a search option.</p>
+                <!-- Example buttons -->
+                <div class="examples">
+                    <span>Examples:</span>
+                    <button type="button" class="example-button" onclick="setExample('1442133', ['T3/Wheat'], 'germplasm')">Germplasm</button>
+                    <button type="button" class="example-button" onclick="setExample('70403', ['T3/Barley','T3/Wheat','T3/Oat'], 'traits')">Traits</button>
+                    <button type="button" class="example-button" onclick="setExample('Cassava', ['T3/Barley'], 'trials')">Trials</button>
+                </div>
+                <!-- Display search results here -->
+                <div class="results-container" id="results-container" style="display: none;">
+                    <h1>Search Results</h1>
+                    <p>You searched for: <strong id="search-term-display"></strong></p>
+                    <div id="results-count"></div>
+                    <div id="grouped-results"></div>
+                    <a href="/" class="back-link">Back to Search</a>
+                </div>        
             </div>
         </form>
+        
     </div>
-
+    
+    <script src="/static/js/index.js"></script>
     <script>
-        document.querySelectorAll('.single-radio').forEach((radio) => {
-            radio.addEventListener('change', function() {
-                document.querySelectorAll('.single-radio').forEach((rb) => {
-                    if (rb !== radio) rb.checked = false;
-                });
-            });
-        });
+        function setExample(example, databases, dataType) {
+    const searchBox = document.getElementById('searchBox');
+    searchBox.value = example;
 
-        function validateForm() {
-            const searchBox = document.getElementById('searchBox');
-            const errorQuery = document.getElementById('errorQuery');
-            const errorCheckbox = document.getElementById('errorCheckbox');
-            const errorRadio = document.getElementById('errorRadio');
-            const checkboxes = document.querySelectorAll('input[name="servers[]"]:checked');
-            const radios = document.querySelectorAll('input[name="search_for"]:checked');
+    // Uncheck all checkboxes
+    const checkboxes = document.querySelectorAll('.checkbox-label input[type="checkbox"]');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
 
-            let valid = true;
-            const searchQuery = searchBox.value.trim();
-            const regex = /^[a-zA-Z0-9\s]+$/;
-
-            if (!regex.test(searchQuery)) {
-                alert('Invalid input. Only alphanumeric characters and spaces are allowed.');
-                event.preventDefault();
-            }
-
-            if (searchBox.value.trim() === '') {
-                errorQuery.style.display = 'block';
-                valid = false;
-            } else {
-                errorQuery.style.display = 'none';
-            }
-
-            if (checkboxes.length === 0) {
-                errorCheckbox.style.display = 'block';
-                valid = false;
-            } else {
-                errorCheckbox.style.display = 'none';
-            }
-
-            if (radios.length === 0) {
-                errorRadio.style.display = 'block';
-                valid = false;
-            } else {
-                errorRadio.style.display = 'none';
-            }
-
-            return valid;
+    // Check the specific database checkboxes
+    databases.forEach(database => {
+        const databaseCheckbox = document.querySelector(`input[name="servers[]"][value="${database}"]`);
+        if (databaseCheckbox) {
+            databaseCheckbox.checked = true;
         }
+    });
 
-        // Keyword search for Datasets
-        document.getElementById('datasetSearch').addEventListener('input', function() {
-            let filter = this.value.toLowerCase();
-            let labels = document.getElementById('datasetContainer').getElementsByTagName('label');
-            Array.from(labels).forEach(label => {
-                let text = label.textContent || label.innerText;
-                label.style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
-            });
-        });
+    // Check the specific data type checkbox
+    const dataTypeCheckbox = document.querySelector(`input[name="search_for"][value="${dataType}"]`);
+    if (dataTypeCheckbox) {
+        dataTypeCheckbox.checked = true;
+    }
 
-        // Keyword search for Search for
-        document.getElementById('searchForSearch').addEventListener('input', function() {
-            let filter = this.value.toLowerCase();
-            let labels = document.getElementById('searchForContainer').getElementsByTagName('label');
-            Array.from(labels).forEach(label => {
-                let text = label.textContent || label.innerText;
-                label.style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
-            });
-        });
+    // Optionally, submit the form automatically
+    // document.getElementById('search-form').submit();
+}
 
-        // Clear all datasets
-        document.getElementById('clearDatasets').addEventListener('click', function() {
-            document.querySelectorAll('input[name="servers[]"]').forEach(cb => cb.checked = false);
-            updateSelectedFilters();
-        });
-
-        // Toggle filter tags
-        function toggleFilter(event) {
-            updateSelectedFilters();
-            updateClearButtonVisibility();
-        }
-
-        // Clear button visibility function
-        function updateClearButtonVisibility() {
-            const clearButton = document.getElementById('clearDatasets');
-            const selectedDatasets = document.querySelectorAll('input[name="servers[]"]:checked');
-
-            if (selectedDatasets.length > 0) {
-                clearButton.style.display = 'block';
-            } else {
-                clearButton.style.display = 'none';
-            }
-        }
-
-        // Update selected filters display
-        function updateSelectedFilters() {
-            const selectedFiltersContainer = document.getElementById('selectedFilters');
-            selectedFiltersContainer.innerHTML = '';
-
-            // Get selected datasets
-            const selectedDatasets = Array.from(document.querySelectorAll('input[name="servers[]"]:checked'))
-                .map(cb => cb.value);
-            selectedDatasets.forEach(dataset => {
-                addFilterTag(dataset, 'servers[]');
-            });
-            updateClearButtonVisibility();
-        }
-
-        // Add filter tag to display
-        function addFilterTag(filter, name) {
-            const selectedFiltersContainer = document.getElementById('selectedFilters');
-            const tag = document.createElement('div');
-            tag.className = 'filter-tag';
-            tag.innerHTML = `<span>${filter}</span> <button onclick="removeFilter('${filter}', '${name}')">&times;</button>`;
-            selectedFiltersContainer.appendChild(tag);
-        }
-
-        // Remove filter
-        function removeFilter(filter, name) {
-            const inputs = document.querySelectorAll(`input[name="${name}"]`);
-            inputs.forEach(input => {
-                if (input.value === filter) {
-                    input.checked = false;
-                }
-            });
-            updateSelectedFilters();
-        }
     </script>
 </body>
 </html>

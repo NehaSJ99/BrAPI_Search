@@ -85,5 +85,5 @@ def check_server_status(server_info):
 
 if __name__ == '__main__':
     servers = fetch_server_apis()
-    #print(servers)
+    print(servers)
     #print(servers)

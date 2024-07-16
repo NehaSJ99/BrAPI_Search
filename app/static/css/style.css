@@ -1,0 +1,314 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #fafafa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100vw;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+    margin-top: 80px; /* Ensure proper spacing from the fixed navbar */
+    box-sizing: border-box;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    color: white;
+    padding: 7px 7px; /* Adjusted padding to reduce overall width */
+    width: 100vw; /* Ensure it spans the entire viewport width */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-sizing: content-box;
+}
+
+
+.navbar a {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    padding: 10px 20px; /* Adjust padding to ensure links fit within the navbar */
+}
+
+.navbar-left,
+.navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-right {
+    justify-content: flex-end;
+    flex-wrap: wrap; /* Allows the items to wrap if they don't fit in one line */
+}
+
+.navbar a:hover {
+    background-color: #d6dbd7; /* Add a subtle hover effect for navbar links */
+}
+
+.filter-box {
+    flex: 0 0 25%; /* 25% width */
+    padding-right: 20px;
+}
+
+.search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+}
+
+.search-box-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto; /* Center the search box and button */
+}
+
+.search-box {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px; /* Rounded corners only on the left side */
+    box-sizing: border-box;
+}
+
+.search-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 0 4px 4px 0; /* Rounded corners only on the right side */
+    background-color: #6fa2ff;
+    color: white;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.search-button:hover {
+    background-color: #32aafa;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+    display: none;
+}
+
+.filters-section {
+    margin-bottom: 20px;
+}
+
+.filters-heading {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.checkbox-container, .radio-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.checkbox-label, .radio-label {
+    margin-bottom: 8px;
+    position: relative;
+    padding-left: 25px;
+}
+
+.checkbox-label input, .radio-label input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkbox-label .checkmark, .radio-label .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border-radius: 4px;
+}
+
+.checkbox-label input:checked ~ .checkmark, .radio-label input:checked ~ .checkmark {
+    background-color: #6fa2ff;
+}
+
+.checkbox-label .checkmark:after, .radio-label .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-label input:checked ~ .checkmark:after, .radio-label input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.checkbox-label .checkmark:after, .radio-label .checkmark:after {
+    left: 8px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+.datasets-container, .searchfor-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+.selected-filters {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.filter-tag {
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    padding: 4px 8px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.filter-tag span {
+    margin-right: 8px;
+}
+
+.filter-tag button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.keyword-search {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+}
+
+.clear-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+
+.clear-button:hover {
+    background-color: #c82333;
+}
+
+.clear-button {
+    display: none;
+}
+
+.filter-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+}
+
+.results-container {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.result-count {
+    margin-bottom: 10px;
+}
+
+.results-list {
+    list-style: none;
+    padding: 0;
+}
+
+.results-list li {
+    margin: 10px 0;
+}
+
+.results-list a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.results-list a:hover {
+    text-decoration: underline;
+}
+
+.highlight {
+    font-weight: bold;
+}
+
+.back-link {
+    margin-top: 20px;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #6fa2ff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.back-link:hover {
+    background-color: #32aafa;
+}
+
+.back-link:hover {
+    background-color: #218838;
+}
+.examples{
+    padding: 10px;
+    align-items: self-end;
+    
+}
+.example-button{
+    padding: 10px;
+}
+.server-name {
+    font-style: italic;
+    margin-left: 10px;
+    color: gray;
+}
