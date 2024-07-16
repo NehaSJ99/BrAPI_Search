@@ -1,0 +1,75 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #fafafa;
+    color: #333;
+    line-height: 1.6;
+}
+.details-container {
+    width: 80%;
+    max-width: 800px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-wrap: hidden;
+    word-wrap: break-word;
+    margin-top: 30px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    align-items: center;
+    align-self: center;
+    margin: 0 auto;
+}
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    width: 100%;
+    align-items: center;
+}
+.detail-item strong {
+    text-align: right;
+    padding-right: 20px;
+    box-sizing: border-box;
+    align-items: center;
+}
+.detail-item, .detail-value  {
+    width: 55%;
+    text-align: left;
+    padding-left: 20px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+}
+.back-link, .pedigree-link, .progeny-link {
+    display: block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    text-align: center;
+    width: 150px;
+    transition: background-color 0.3s ease;
+    margin: 20px auto 0;
+}
+.pedigree-link,.progeny-link {
+    background-color: #007bff;
+}
+.back-link:hover, .pedigree-link:hover , .progeny-link:hover {
+    background-color: #218838;
+}
+.pedigree-link:hover, .progeny-link:hover {
+    background-color: #0056b3;
+}
+.disabled-link {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
