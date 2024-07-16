@@ -136,3 +136,11 @@ def germplasm_progeny(germplasm_id):
     
     logging.warning("Progeny information not found")
     return "Progeny information not found", 404
+
+@main.route('/about') 
+def aboutPage(): 
+    return render_template('about.html') 
+
+@main.route('/contact') 
+def contactPage(): 
+    return render_template('contact.html') 

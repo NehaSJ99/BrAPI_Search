@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrAPI Search Tool - About</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            color: #333;
+            line-height: 1.6;
+            }
+            .page-title{
+            color: #555555;
+            font-size: 2 em;
+            font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            padding: 0;
+            margin: 0 0 0.46 em;
+            font-weight: 700;
+            text-align: left;
+            text-shadow: 0 1px 1px rgba(0,0,0,.6);
+        }
+        .about-container {
+            width: 80%;
+            max-width: 800px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-wrap: hidden;
+            word-wrap: break-word;
+            white-space: wrap;
+            text-overflow: ellipsis;
+            align-items: center;
+            align-self: center;
+            margin: 0 auto;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the navbar -->
+    {% include 'navbar.html' %}
+
+    <!-- Page content -->
+    <div class="container">
+        <div class="about-container">
+            <h1 id="page-title">About BrAPI Search Tool</h1>
+            <p>GrainGenes, a database for Triticeae and Avena, is a comprehensive resource for molecular and phenotypic information for wheat, barley, rye, and oat.</p>
+            <p><a href="https://brapi.org" target="_blank">BrAPI</a> is a standardized RESTful web service API specification for communicating plant breeding data</p>
+            <p>To access code and scripts, please go to <a href="https://github.com/NehaSJ99/BrAPI_Search" target="_blank">GitHub</a>.</p>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+</html>

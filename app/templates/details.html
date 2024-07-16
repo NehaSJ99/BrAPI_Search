@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sample Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            color: #333;
+            line-height: 1.6;
         }
         .details-container {
             width: 80%;
@@ -24,15 +23,12 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             overflow-wrap: hidden;
             word-wrap: break-word;
-            margin-top: 20px;
+            margin-top: 30px;
             white-space: nowrap;
             text-overflow: ellipsis;
             align-items: center;
-        }
-        .highlight {
-            background-color: #ffffcc; /* Light yellow background for subtle highlighting */
-            border-radius: 4px;
-            padding: 2px;
+            align-self: center;
+            margin: 0 auto;
         }
         h1, h2 {
             text-align: center;
@@ -88,6 +84,10 @@
     </style>
 </head>
 <body>
+    <!-- Include the navbar -->
+    {% include 'navbar.html' %}
+
+    <!-- Page content -->
     <div class="details-container">
         <h1>Sample Details</h1>
         {% for key, value in sample|dictsort %}

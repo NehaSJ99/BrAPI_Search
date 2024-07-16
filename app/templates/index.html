@@ -5,20 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrAPI Search Page</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
 </head>
 <body>
-    <header id="header" class="clearfix" role="banner">
-    <div class="navbar">
-        <div class="navbar-left">
-            <a href="#"><h3>BrAPI Search Tool</h3></a>
-        </div>
-        <div class="navbar-right">
-            <a href="#">Home</a>
-            <a href="#">About</a>
-            <a href="#">Contact</a>
-        </div>
-    </div>
-</header>
+    <!-- Include the navbar -->
+    {% include 'navbar.html' %}
+
+    <!-- Page content -->
     <div class="container">
         <form id="search-form" onsubmit="performSearch(event)" style="display: flex; flex: 1;">
             <div class="filter-box">
@@ -81,7 +74,6 @@
                 </div>
                 <!-- Display search results here -->
                 <div class="results-container" id="results-container" style="display: none;">
-                    <h1>Search Results</h1>
                     <p>You searched for: <strong id="search-term-display"></strong></p>
                     <div id="results-count"></div>
                     <div id="grouped-results"></div>
