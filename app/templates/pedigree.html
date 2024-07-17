@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Germplasm Pedigree</title>
+    <title>GrainGenes | BrAPI Search Tool - Pedigree</title>
+    <link rel="icon" href="static/images/GG3.png" type="image/x-icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,8 +64,12 @@
     </style>
 </head>
 <body>
+    <!-- Include the navbar -->
+    {% include 'navbar.html' %}
+
+    <!-- Page content -->
     <div class="pedigree-container">
-        <h1>Germplasm Pedigree</h1>
+        <h2>Germplasm Pedigree</h2>
         {% if pedigree %}
             {% for key, value in pedigree.items() %}
                 {% if key == 'siblings' and value %}
@@ -94,5 +101,7 @@
         {% endif %}
         <a href="/" class="back-link">Back to Search</a>
     </div>
+    <!-- Include the footer -->
+    {% include 'footer.html' %}
 </body>
 </html>

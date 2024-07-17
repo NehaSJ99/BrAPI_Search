@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Progeny Information</title>
+    <title>GrainGenes | BrAPI Search Tool - Progeny</title>
+    <link rel="icon" href="static/images/GG3.png" type="image/x-icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,8 +52,12 @@
     
 </head>
 <body>
+    <!-- Include the navbar -->
+    {% include 'navbar.html' %}
+
+    <!-- Page content -->
     <div class="progeny-container">
-        <h1>Germplasm progeny</h1>
+        <h2>Germplasm progeny</h2>
         {% if progeny %}
             {% for key, value in progeny.items() %}
                 <div class="progeny-item">
@@ -62,5 +69,7 @@
         {% endif %}
         <a href="/" class="back-link">Back to Search</a>
     </div>
+    <!-- Include the footer -->
+    {% include 'footer.html' %}
 </body>
 </html>

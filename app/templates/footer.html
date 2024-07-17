@@ -6,25 +6,23 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
 </head>
 <body>
+    <!-- Other body content -->
+
     <footer class="footer">
         <div class="footer-container">
-          <div class="footer-brapi">
-            <p class="text-muted mb-0"></p>
-            <span class="d-none d-md-inline"> Powered By&nbsp;</span>
-              <a href="https://brapi.org" style="display: inline">
-                <img id="brapi-logo" src="static/images/brapi-logo.svg" title="The Breeding API">
-              </a>
-              </p>
-          </div>
-          <div class="footer-source">
-            <p class="text-muted mb-0">
-            <span class="d-none d-md-inline">Source Code Available&nbsp;</span>
-              <a href="https://github.com/NehaSJ99/BrAPI_Search">
-                <img id="github-logo" src="static/images/github-logo.png" title="GitHub">
-              </a>
-            </p>
-          </div>
+            <div class="footer-brapi">
+                <span class="text-muted mb-0">Powered By&nbsp;</span>
+                <a href="https://brapi.org" style="display: inline">
+                    <img id="brapi-logo" src="{{ url_for('static', filename='images/brapi-logo.svg') }}" title="The Breeding API">
+                </a>
+            </div>
+            <div class="footer-source">
+                <span class="text-muted mb-0">Source Code Available&nbsp;</span>
+                <a href="https://github.com/NehaSJ99/BrAPI_Search">
+                    <img id="github-logo" src="{{ url_for('static', filename='images/github-logo.png') }}" title="GitHub">
+                </a>
+            </div>
         </div>
-      </footer>
+    </footer>
 </body>
 </html>

@@ -5,17 +5,17 @@ from app.BrAPIs import fetch_server_apis
 def write_data(mydict, server_name):
     myclient = pymongo.MongoClient("mongodb://127.0.0.1:27017")
     mydb = myclient["brapidata"]
-    mycol = mydb[server_name + "_germplasm"]
+    mycol = mydb[server_name + "_trials"]
     x = mycol.insert_many(mydict)
     print(f'Data inserted successfully for: {server_name}')
     # Print list of the _id values of the inserted documents
-    print(x.inserted_ids)
+    #print(x.inserted_ids)
 
 def read_data(server_name):
     print(server_name)
     myclient = pymongo.MongoClient("mongodb://127.0.0.1:27017")
     mydb = myclient["brapidata"]
-    #mycol = mydb[server_name + "_germplasm"]
+    #mycol = mydb[server_name + "_trials"]
     mycol = mydb[server_name]
     count_col = mycol.count_documents({})
     print(f'Count of collection: {count_col}')
@@ -23,7 +23,7 @@ def read_data(server_name):
 def drop_collection(server_name):
     myclient = pymongo.MongoClient("mongodb://127.0.0.1:27017")
     mydb = myclient["brapidata"]
-    mycol = mydb[server_name + "_germplasm"]
+    mycol = mydb[server_name + "_trials"]
     mycol.drop()
 
 def find_data(server_name, data):
@@ -42,7 +42,7 @@ def get_germplasm_data(base_url):
 
     while page < total_pages:
         print(f'Fetching page: {page}')
-        url = f"{base_url}germplasm?page={page}&pageSize=5000"
+        url = f"{base_url}trials?page={page}&pageSize=5000"
         print(f'URL: {url}')
         try:
             response = requests.get(url, verify=False)  # Disable SSL certificate verification
@@ -81,7 +81,7 @@ def read_all_data():
     for server in server_info:
         server_name = server_info.get(server, {}).get('server-title')
         server_name = server_name.replace("/", "_").lower()
-        read_data(server_name+"_germplasm")
+        read_data(server_name+"_trials")
 
 def write_all_data():
     for server in server_info:

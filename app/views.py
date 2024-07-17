@@ -2,12 +2,11 @@ from flask import request, render_template, Blueprint, jsonify
 import logging
 from .BrAPIClientService import getGermplasmSearch, search_trait, search_trial, getGermplasmPedigree, getGermplasmProgeny
 from .BrAPIs import fetch_server_apis
-import json
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+
 
 main = Blueprint("main", __name__)
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)  # Set log level as needed
 
 server_info = {
     'T3/Wheat': {'server-title': 'T3/Wheat', 'api-urls': ['https://wheat.triticeaetoolbox.org/brapi/v2/'], 'auth-required': False, 'server_status': True},
@@ -15,9 +14,29 @@ server_info = {
     'T3/Barley': {'server-title': 'T3/Barley', 'api-urls': ['https://barley.triticeaetoolbox.org/brapi/v2/'], 'auth-required': False, 'server_status': True}
 }
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)  # Set log level as needed
+
+# Initialize MongoDB client
+myclient = MongoClient('mongodb://127.0.0.1:27017')
+if myclient:
+    print(f"Connection established with string : {myclient}")
+else:
+    print("Not abble to established a connection with mongo server")
+db = myclient["brapidata"]
+print(db)
+
 @main.route("/", methods=['GET', 'POST'])
 def index():
     return render_template("index.html", server_info=server_info)
+
+@main.route('/about') 
+def aboutPage(): 
+    return render_template('about.html') 
+
+@main.route('/contact') 
+def contactPage(): 
+    return render_template('contact.html')
 
 @main.route("/search", methods=['POST'])
 def search():
@@ -26,42 +45,59 @@ def search():
     search_param = request.form.get("query")
     selected_servers = request.form.getlist("servers[]")
     search_for = request.form.get("search_for")
+    mongo_db = 'brapidata'
+
+    collection_name_list = []
+    for server in selected_servers:
+        col_name = server.replace("/", "_").lower() + "_" + search_for
+        collection_name_list.append((col_name, server))  # Store collection name and server as tuple
 
     logging.info("On the Search Page")
     logging.info(f"Search Query: {search_param}")
     logging.info(f"Selected Servers: {selected_servers}")
     logging.info(f"Search For: {search_for}")
+    logging.info(f"Mongo database: {mongo_db}")
+    logging.info(f"Collections: {collection_name_list}")
 
-    if server_info:
-        for server in selected_servers:
-            base_url = server_info.get(server, {}).get('api-urls', [])[0]
-            if base_url:
-                if search_for == "germplasm":
-                    results = getGermplasmSearch(search_param, base_url)
-                elif search_for == "traits":
-                    results = [search_trait(search_param, base_url)]
-                elif search_for == "trials":
-                    results = [search_trial(search_param, base_url)]
-                else:
-                    results = []
+    # Define the search fields for different search types
+    search_fields = {
+        "traits": ["traitName", "traitDbId"],
+        "germplasm": ["genus", "germplasmDbId", "germplasmName", "species", "defaultDisplayName", "accessionNumber"],
+        "trials" : ["trialName","trialDbId", "programName", "programDbId", "commonCropName"]
+    }
 
-                if results:
-                    for result in results:
-                        result['server_name'] = server
-                        result['base_url'] = base_url
-                    search_results.extend(results)
-                else:
-                    logging.warning(f"No results found for search on server: {server}")
-            else:
-                logging.warning(f"No base URL found for server: {server}")
-    else:
-        logging.warning("Server Info not found")
-    print(f'Search Results : {search_results}')
-    print('********************************************')
-    print(jsonify(search_results))
-    #return jsonify(search_results)
-    return search_results
+    # Fetch data from MongoDB based on the input
+    if collection_name_list:
+        for collection_name, server in collection_name_list:
+            collection = db[collection_name]
 
+            # Determine which fields to search based on the search_for parameter
+            if search_for in search_fields:
+                query_conditions = [{field: {"$regex": search_param, "$options": "i"}} for field in search_fields[search_for]]
+                results = collection.find({
+                    "$or": query_conditions
+                })
+
+                for result in results:
+                    # Add server name and base URL to each result if collection name matches
+                    if 't3_barley' in collection_name:
+                        server_title = server_info['T3/Barley']['server-title']
+                        base_url = server_info['T3/Barley']['api-urls'][0]
+                    elif 't3_oat' in collection_name:
+                        server_title = server_info['T3/Oat']['server-title']
+                        base_url = server_info['T3/Oat']['api-urls'][0]
+                    elif 't3_wheat' in collection_name:
+                        server_title = server_info['T3/Wheat']['server-title']
+                        base_url = server_info['T3/Wheat']['api-urls'][0]
+                    else:
+                        server_title = server
+                        base_url = ''  # Default base URL if not found in the dictionary
+
+                    result['server_name'] = server_title
+                    result['base_url'] = base_url
+                    result['_id'] = str(result['_id'])  # Convert ObjectId to string for JSON serialization
+                    search_results.append(result)
+    return jsonify(search_results)
 
 @main.route("/details/<string:detail_type>/<string:detail_id>")
 def details(detail_type, detail_id):
@@ -136,11 +172,3 @@ def germplasm_progeny(germplasm_id):
     
     logging.warning("Progeny information not found")
     return "Progeny information not found", 404
-
-@main.route('/about') 
-def aboutPage(): 
-    return render_template('about.html') 
-
-@main.route('/contact') 
-def contactPage(): 
-    return render_template('contact.html') 

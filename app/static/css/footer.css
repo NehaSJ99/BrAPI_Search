@@ -1,42 +1,46 @@
-/* Sticky footer styles
--------------------------------------------------- */
+/* Sticky footer styles */
 .footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 50px; /* Set the fixed height of the footer here */
-    line-height: 60px; /* Vertically center the text there */
-    background-color:#f5f5f5; /*#2b3e50; #f5f5f5*/
-    color: #000000;
-    margin-top: 30px;
-  }
-  .footer-container {
-    width: auto;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 15px;
-  }
-  .footer-brapi {
-    float: left;
-  }
-  .footer-source {
-    float: right;
-  }
-  
-  #brapi-logo {
-    max-height: 20px;
-    margin-top: -5px;
-  }
-  #github-logo {
-    max-height: 30px;
-    margin-top: -7px;
-  }
-  p {
-    display: block;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    unicode-bidi: isolate;
+  position: fixed; /* Fix the footer at the bottom of the page */
+  bottom: 0;
+  width: 100%;
+  height: 50px; /* Set the fixed height of the footer here */
+  background-color: #f5f5f5; /* Footer background color */
+  color: #000000; /* Footer text color */
+  display: flex; /* Use flexbox for alignment */
+  justify-content: space-between; /* Space out content */
+  align-items: center; /* Vertically center content */
+  padding: 0 15px; /* Add padding to the sides */
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow for separation */
 }
 
+.footer-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-brapi,
+.footer-source {
+  display: flex;
+  align-items: center;
+}
+
+.footer-brapi img,
+.footer-source img {
+  margin-left: 5px; /* Space between text and logo */
+}
+
+#brapi-logo {
+  max-height: 20px;
+}
+
+#github-logo {
+  max-height: 30px;
+}
+
+p {
+  margin: 0; /* Remove default margins for p elements inside the footer */
+}
