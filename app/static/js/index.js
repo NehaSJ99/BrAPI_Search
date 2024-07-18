@@ -19,7 +19,7 @@ function validateForm() {
     const regex = /^[a-zA-Z0-9\s]+$/;
 
     if (!regex.test(searchQuery)) {
-        alert('Invalid input. Only alphanumeric characters and spaces are allowed.');
+        if(!alert('Invalid input. Only alphanumeric characters and spaces are allowed.')){window.location.reload();}
         event.preventDefault();
         return false;
     }
@@ -121,7 +121,7 @@ function performSearch(event) {
     const regex = /^[a-zA-Z0-9\s]+$/;
 
     if (!regex.test(query)) {
-        alert('Invalid input. Only alphanumeric characters and spaces are allowed.');
+        if(!alert('Invalid input. Only alphanumeric characters and spaces are allowed.')){window.location.reload();}
         event.preventDefault();
         clearInput();
         return false;
