@@ -1,3 +1,4 @@
+// Single Radio Button Logic
 document.querySelectorAll('.single-radio').forEach((radio) => {
     radio.addEventListener('change', function() {
         document.querySelectorAll('.single-radio').forEach((rb) => {
@@ -6,6 +7,7 @@ document.querySelectorAll('.single-radio').forEach((radio) => {
     });
 });
 
+// Form Validation
 function validateForm() {
     const searchBox = document.getElementById('searchBox');
     const errorQuery = document.getElementById('errorQuery');
@@ -19,8 +21,8 @@ function validateForm() {
     const regex = /^[a-zA-Z0-9\s]+$/;
 
     if (!regex.test(searchQuery)) {
-        if(!alert('Invalid input. Only alphanumeric characters and spaces are allowed.')){window.location.reload();}
-        event.preventDefault();
+        alert('Invalid input. Only alphanumeric characters and spaces are allowed.');
+        window.location.reload();
         return false;
     }
 
@@ -31,7 +33,7 @@ function validateForm() {
     return valid;
 }
 
-// Keyword search for Datasets
+// Keyword Search for Datasets
 document.getElementById('datasetSearch').addEventListener('input', function() {
     let filter = this.value.toLowerCase();
     let labels = document.getElementById('datasetContainer').getElementsByTagName('label');
@@ -41,7 +43,7 @@ document.getElementById('datasetSearch').addEventListener('input', function() {
     });
 });
 
-// Keyword search for Search for
+// Keyword Search for Data Types
 document.getElementById('searchForSearch').addEventListener('input', function() {
     let filter = this.value.toLowerCase();
     let labels = document.getElementById('searchForContainer').getElementsByTagName('label');
@@ -51,19 +53,19 @@ document.getElementById('searchForSearch').addEventListener('input', function() 
     });
 });
 
-// Clear all datasets
+// Clear All Datasets
 document.getElementById('clearDatasets').addEventListener('click', function() {
     document.querySelectorAll('input[name="servers[]"]').forEach(cb => cb.checked = false);
     updateSelectedFilters();
 });
 
-// Toggle filter tags
+// Toggle Filter Tags
 function toggleFilter(event) {
     updateSelectedFilters();
     updateClearButtonVisibility();
 }
 
-// Clear button visibility function
+// Update Clear Button Visibility
 function updateClearButtonVisibility() {
     const clearButton = document.getElementById('clearDatasets');
     const selectedDatasets = document.querySelectorAll('input[name="servers[]"]:checked');
@@ -71,7 +73,7 @@ function updateClearButtonVisibility() {
     clearButton.style.display = selectedDatasets.length > 0 ? 'block' : 'none';
 }
 
-// Update selected filters display
+// Update Selected Filters Display
 function updateSelectedFilters() {
     const selectedFiltersContainer = document.getElementById('selectedFilters');
     selectedFiltersContainer.innerHTML = '';
@@ -85,16 +87,16 @@ function updateSelectedFilters() {
     updateClearButtonVisibility();
 }
 
-// Add filter tag to display
+// Add Filter Tag to Display
 function addFilterTag(filter, name) {
     const selectedFiltersContainer = document.getElementById('selectedFilters');
     const tag = document.createElement('div');
     tag.className = 'filter-tag';
-    tag.innerHTML = `<span>${filter}</span> <button onclick="removeFilter('${filter}', '${name}')">&times;</button>`;
+    tag.innerHTML = `<span>${filter}</span> <button type="button" class="btn btn-danger btn-sm" onclick="removeFilter('${filter}', '${name}')">&times;</button>`;
     selectedFiltersContainer.appendChild(tag);
 }
 
-// Remove filter
+// Remove Filter
 function removeFilter(filter, name) {
     const inputs = document.querySelectorAll(`input[name="${name}"]`);
     inputs.forEach(input => {
@@ -104,15 +106,13 @@ function removeFilter(filter, name) {
     });
     updateSelectedFilters();
 }
-document.getElementById('search-button').addEventListener('click', function() {
-    performSearch();
-});
 
+// Perform Search
 function performSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
 
     // Validate the form
-    //const query = document.getElementById('searchBox').value;
+    const searchBox = document.getElementById('searchBox');
     const servers = document.querySelectorAll('input[name="servers[]"]:checked');
     const searchFor = document.querySelectorAll('input[name="search_for"]:checked');
 
@@ -121,31 +121,30 @@ function performSearch(event) {
     const regex = /^[a-zA-Z0-9\s]+$/;
 
     if (!regex.test(query)) {
-        if(!alert('Invalid input. Only alphanumeric characters and spaces are allowed.')){window.location.reload();}
-        event.preventDefault();
+        alert('Invalid input. Only alphanumeric characters and spaces are allowed.');
         clearInput();
         return false;
     }
 
     if (!query) {
-    document.getElementById('errorQuery').style.display = 'block';
-    valid = false;
+        document.getElementById('errorQuery').style.display = 'block';
+        valid = false;
     } else {
-    document.getElementById('errorQuery').style.display = 'none';
+        document.getElementById('errorQuery').style.display = 'none';
     }
 
     if (servers.length === 0) {
-    document.getElementById('errorCheckbox').style.display = 'block';
-    valid = false;
+        document.getElementById('errorCheckbox').style.display = 'block';
+        valid = false;
     } else {
-    document.getElementById('errorCheckbox').style.display = 'none';
+        document.getElementById('errorCheckbox').style.display = 'none';
     }
 
     if (searchFor.length === 0) {
-    document.getElementById('errorRadio').style.display = 'block';
-    valid = false;
+        document.getElementById('errorRadio').style.display = 'block';
+        valid = false;
     } else {
-    document.getElementById('errorRadio').style.display = 'none';
+        document.getElementById('errorRadio').style.display = 'none';
     }
 
     if (!valid) return;
@@ -154,87 +153,95 @@ function performSearch(event) {
     const formData = new FormData();
     formData.append('query', query);
     servers.forEach(server => {
-    formData.append('servers[]', server.value);
+        formData.append('servers[]', server.value);
     });
     searchFor.forEach(item => {
-    formData.append('search_for', item.value);
+        formData.append('search_for', item.value);
     });
 
     fetch('/search', {
-    method: 'POST',
-    body: formData
+        method: 'POST',
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
-    const resultsContainer = document.getElementById('results-container');
-    const searchTermDisplay = document.getElementById('search-term-display');
-    const resultsCount = document.getElementById('results-count');
-    const groupedResults = document.getElementById('grouped-results');
+        const resultsContainer = document.getElementById('results-container');
+        const searchTermDisplay = document.getElementById('search-term-display');
+        const resultsCount = document.getElementById('results-count');
+        const groupedResults = document.getElementById('grouped-results');
 
-    // Update the search term display
-    searchTermDisplay.textContent = query;
+        // Update the search term display
+        searchTermDisplay.textContent = query;
 
-    // Clear previous results
-    resultsCount.innerHTML = '';
-    groupedResults.innerHTML = '';
+        // Clear previous results
+        resultsCount.innerHTML = '';
+        groupedResults.innerHTML = '';
 
-    if (data.length === 0) {
-        resultsCount.textContent = 'No results found.';
-    } else {
-        const resultCount = data.length;
-        resultsCount.textContent = `${resultCount} result(s) found`;
+        if (data.length === 0) {
+            resultsCount.textContent = 'No results found.';
+        } else {
+            const resultCount = data.length;
+            resultsCount.textContent = `${resultCount} result(s) found`;
 
-        // Group results by server_name
-        const groupedData = data.reduce((acc, item) => {
-            if (!acc[item.server_name]) {
-                acc[item.server_name] = [];
-            }
-            acc[item.server_name].push(item);
-            return acc;
-        }, {});
-
-        for (const [serverName, samples] of Object.entries(groupedData)) {
-            const resultsList = document.createElement('ul');
-            resultsList.className = 'results-list';
-            
-            samples.forEach(sample => {
-                const listItem = document.createElement('li');
-                let url = '';
-                
-                if (sample.germplasmDbId) {
-                    url = `/details/germplasm/${sample.germplasmDbId}?base_url=${encodeURIComponent(sample.base_url)}`;
-                    listItem.innerHTML = `<a href="#" data-url="${url}"><span class="highlight">${sample.defaultDisplayName}</span> (${sample.species})</a> <span class="server-name">from ${serverName}</span>`;
-                } else if (sample.traitDbId) {
-                    url = `/details/trait/${sample.traitDbId}?base_url=${encodeURIComponent(sample.base_url)}`;
-                    listItem.innerHTML = `<a href="#" data-url="${url}"><span class="highlight">${sample.traitName}</span> (Trait ID: ${sample.traitDbId})</a> <span class="server-name">from ${serverName}</span>`;
-                } else if (sample.trialDbId) {
-                    url = `/details/trial/${sample.trialDbId}?base_url=${encodeURIComponent(sample.base_url)}`;
-                    listItem.innerHTML = `<a href="#" data-url="${url}"><span class="highlight">${sample.trialName}</span> (Trial ID: ${sample.trialDbId})</a> <span class="server-name">from ${serverName}</span>`;
+            // Group results by server_name
+            const groupedData = data.reduce((acc, item) => {
+                if (!acc[item.server_name]) {
+                    acc[item.server_name] = [];
                 }
+                acc[item.server_name].push(item);
+                return acc;
+            }, {});
 
-                listItem.querySelector('a').addEventListener('click', function(event) {
-                    event.preventDefault();
-                    window.location.href = this.getAttribute('data-url');
+            for (const [serverName, samples] of Object.entries(groupedData)) {
+                const resultsList = document.createElement('ul');
+                resultsList.className = 'results-list';
+                
+                samples.forEach(sample => {
+                    const listItem = document.createElement('li');
+                    let url = '';
+                    
+                    if (sample.germplasmDbId) {
+                        url = `/details/germplasm/${sample.germplasmDbId}?base_url=${encodeURIComponent(sample.base_url)}`;
+                        listItem.innerHTML = `<a href="#" data-url="${url}"><span class="highlight">${sample.defaultDisplayName}</span> (${sample.species})</a> <span class="server-name">from ${serverName}</span>`;
+                    } else if (sample.traitDbId) {
+                        url = `/details/trait/${sample.traitDbId}?base_url=${encodeURIComponent(sample.base_url)}`;
+                        listItem.innerHTML = `<a href="#" data-url="${url}"><span class="highlight">${sample.traitName}</span> (Trait ID: ${sample.traitDbId})</a> <span class="server-name">from ${serverName}</span>`;
+                    } else if (sample.trialDbId) {
+                        url = `/details/trial/${sample.trialDbId}?base_url=${encodeURIComponent(sample.base_url)}`;
+                        listItem.innerHTML = `<a href="#" data-url="${url}"><span class="highlight">${sample.trialName}</span> (Trial ID: ${sample.trialDbId})</a> <span class="server-name">from ${serverName}</span>`;
+                    }
+
+                    listItem.querySelector('a').addEventListener('click', function(event) {
+                        event.preventDefault();
+                        window.location.href = this.getAttribute('data-url');
+                    });
+
+                    resultsList.appendChild(listItem);
                 });
 
-                resultsList.appendChild(listItem);
-            });
-
-            groupedResults.appendChild(resultsList);
+                groupedResults.appendChild(resultsList);
+            }
         }
+
+        // Show the results container
+        resultsContainer.style.display = 'block';
+    })
+    .catch(error => {
+        console.error('Error fetching search results:', error);
+        const resultsContainer = document.getElementById('results-container');
+        resultsContainer.innerHTML = 'An error occurred while fetching results.';
+        resultsContainer.style.display = 'block';
+    });
 }
 
-// Show the results container
-resultsContainer.style.display = 'block';
-})
-.catch(error => {
-console.error('Error fetching search results:', error);
-const resultsContainer = document.getElementById('results-container');
-resultsContainer.innerHTML = 'An error occurred while fetching results.';
-resultsContainer.style.display = 'block';
-});
-}
-
+// Clear Input Fields
 function clearInput() { 
     document.getElementById("search-form").reset();
-} 
+    updateSelectedFilters();
+    updateClearButtonVisibility();
+}
+
+// Search Button Event Listener
+document.getElementById('search-button').addEventListener('click', function(event) {
+    performSearch(event);
+});

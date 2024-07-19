@@ -3,26 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <!-- Other body content -->
 
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-brapi">
-                <span class="text-muted mb-0">Powered By&nbsp;</span>
-                <a href="https://brapi.org" style="display: inline">
-                    <img id="brapi-logo" src="{{ url_for('static', filename='images/brapi-logo.svg') }}" title="The Breeding API">
+    <footer class="footer bg-light text-dark py-2 fixed-bottom">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="footer-brapi d-flex align-items-center">
+                <span class="text-muted mb-0 mr-2">Powered By&nbsp;</span>
+                <a href="https://brapi.org" class="d-inline">
+                    <img id="brapi-logo" src="{{ url_for('static', filename='images/brapi-logo.svg') }}" title="The Breeding API" class="mr-2" style="max-height: 20px;">
                 </a>
             </div>
-            <div class="footer-source">
-                <span class="text-muted mb-0">Source Code Available&nbsp;</span>
-                <a href="https://github.com/NehaSJ99/BrAPI_Search">
-                    <img id="github-logo" src="{{ url_for('static', filename='images/github-logo.png') }}" title="GitHub">
+            <div class="footer-source d-flex align-items-center">
+                <span class="text-muted mb-0 mr-2">Source Code Available&nbsp;</span>
+                <a href="https://github.com/NehaSJ99/BrAPI_Search" class="d-inline">
+                    <img id="github-logo" src="{{ url_for('static', filename='images/github-logo.png') }}" title="GitHub" style="max-height: 30px;">
                 </a>
             </div>
         </div>
     </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

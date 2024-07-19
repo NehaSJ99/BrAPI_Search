@@ -4,35 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrainGenes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .highlight {
+            color: #ffd700 !important;
+        }
+        .navbar-brand img {
+            display: block;
+            margin: 0 auto;
+        }
+        .navbar-text {
+            text-align: center;
+            display: block;
+            margin-top: -10px;
+        }
+    </style>
 </head>
 <body>
-    <header id="header" class="clearfix" role="banner">
-        <div class="header-inner clearfix">
-            <!-- start: Branding -->
-            <div id="branding" class="branding-elements clearfix">
-                <!-- start: Site name and Slogan hgroup -->
-                <div class="h-group" id="name-and-slogan">
-                    <div id="logo">
-                        <a href="https://wheat.pw.usda.gov/GG3/">
-                            <img class="site-logo" src="static/images/gglogo.png" alt="GrainGenes">
-                        </a>
-                    </div>
-                    <p id="site-slogan">A Database for Triticeae and Avena</p>
-                </div><!-- /end #name-and-slogan -->
-            </div><!-- /end #branding -->
-            <!-- start: Navigation -->
-            <nav id="navbar">
-                <ul class="nav">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about">About</a></li>
-                    <li><a href="/contact" class="highlight">Contact</a></li>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <div class="d-flex flex-column align-items-center">
+                <a class="navbar-brand" href="https://wheat.pw.usda.gov/GG3/">
+                    <img src="{{ url_for('static', filename='images/gglogo.png') }}" height="40" alt="GrainGenes">
+                </a>
+                <span class="navbar-text">A Database for Triticeae and Avena</span>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link highlight" href="/contact">Contact</a>
+                    </li>
                 </ul>
-            </nav><!-- /end #navbar -->
-        </div><!-- /end .header-inner -->
-    </header>
+            </div>
+        </div>
+    </nav>
+
     <main>
         <!-- Main content goes here -->
     </main>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

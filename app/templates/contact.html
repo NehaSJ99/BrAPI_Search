@@ -4,72 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrainGenes | BrAPI Search Tool - Contact</title>
-    <link rel="icon" href="static/images/GG3.png" type="image/x-icon"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #fafafa;
-            color: #333;
-            line-height: 1.6;
-        }
-        .container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .contact-container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 50px;
-        }
-        .contact-container h1 {
-            color: #555;
-            font-size: 2em;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .contact-container p {
-            font-size: 1.1em;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-        .contact-container ul {
-            list-style: none;
-            padding: 0;
-        }
-        .contact-container ul li {
-            font-size: 1.1em;
-            line-height: 1.8;
-            margin-bottom: 10px;
-            color: brown;
-        }
-    </style>
+    <link rel="icon" href="{{ url_for('static', filename='images/GG3.png') }}" type="image/x-icon"/>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <!-- Include the navbar -->
     {% include 'navbar.html' %}
 
     <!-- Page content -->
-    <div class="container">
-        <div class="contact-container">
-            <h1>Contact Us</h1>
+    <div class="container my-4">
+        <div class="card p-4 shadow-sm border-0">
+            <h1 class="display-4 text-center mb-4">Contact Us</h1>
             <p>If you have any questions, comments, or suggestions about the BrAPI Search Tool at GrainGenes, please feel free to contact:</p>
-            <ul>
-                <li>Neha Jagtap (njagtap at ncsu dot edu)</li>
-                <li>The GrainGenes Team (feedback@graingenes.org)</li>
+            <ul class="list-unstyled">
+                <li class="mb-2"><strong>Neha Jagtap</strong> (njagtap at ncsu dot edu)</li>
+                <li><strong>The GrainGenes Team</strong> (feedback@graingenes.org)</li>
             </ul>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    
     <!-- Include the footer -->
     {% include 'footer.html' %}
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

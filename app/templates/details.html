@@ -4,43 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrainGenes | Brapi Search Tool - Details</title>
-    <link rel="icon" href="static/images/GG3.png" type="image/x-icon"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/details.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/GG3.png') }}" type="image/x-icon"/>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .disabled-link {
+            pointer-events: none;
+            color: #6c757d;
+            background-color: #e9ecef;
+            border-color: #e9ecef;
+        }
+    </style>
 </head>
 <body>
     <!-- Include the navbar -->
     {% include 'navbar.html' %}
 
     <!-- Page content -->
-    <div class="details-container">
-        <h2>Sample Details</h2>
-        <ul class="detail-list">
-            {% for key, value in sample|dictsort %}
-                {% if value and key != 'base_url' and key != 'pedigree' and key != 'progeny' %}
-                    <li class="detail-item">
-                        <strong>{{ key }}</strong>: {{ value }}
-                    </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-        
-        {% set has_pedigree = sample.get('pedigree', 'No') == 'Yes' %}
-        {% set has_progeny = sample.get('progeny', 'No') == 'Yes' %}
-        {% if sample.germplasmDbId %}
-            <div class="links-section">
-                <a href="{{ url_for('main.germplasm_pedigree', germplasm_id=sample.germplasmDbId, base_url=sample.base_url) }}"
-                   class="pedigree-link {% if not has_pedigree %}disabled-link{% endif %}"
-                   {% if not has_pedigree %}onclick="return false;"{% endif %}>Check Pedigree</a>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center">Sample Details</h2>
+                <ul class="list-group list-group-flush">
+                    {% for key, value in sample|dictsort %}
+                        {% if value and key != 'base_url' and key != 'pedigree' and key != 'progeny' %}
+                            <li class="list-group-item">
+                                <strong>{{ key }}</strong>: {{ value }}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                {% set has_pedigree = sample.get('pedigree', 'No') == 'Yes' %}
+                {% set has_progeny = sample.get('progeny', 'No') == 'Yes' %}
+                {% if sample.germplasmDbId %}
+                    <div class="mt-4 text-center">
+                        <a href="{{ url_for('main.germplasm_pedigree', germplasm_id=sample.germplasmDbId, base_url=sample.base_url) }}"
+                           class="btn btn-primary {% if not has_pedigree %}disabled-link{% endif %}"
+                           {% if not has_pedigree %}onclick="return false;"{% endif %}>Check Pedigree</a>
 
-                <a href="{{ url_for('main.germplasm_progeny', germplasm_id=sample.germplasmDbId, base_url=sample.base_url) }}"
-                   class="progeny-link {% if not has_progeny %}disabled-link{% endif %}"
-                   {% if not has_progeny %}onclick="return false;"{% endif %}>Check Progeny</a>
+                        <a href="{{ url_for('main.germplasm_progeny', germplasm_id=sample.germplasmDbId, base_url=sample.base_url) }}"
+                           class="btn btn-primary {% if not has_progeny %}disabled-link{% endif %}"
+                           {% if not has_progeny %}onclick="return false;"{% endif %}>Check Progeny</a>
+                    </div>
+                {% endif %}
+                <div class="mt-4 text-center">
+                    <a href="/" class="btn btn-success">Back to Search Results</a>
+                </div>
             </div>
-        {% endif %}
-        <a href="/" class="back-link">Back to Search Results</a>
+        </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/static/js/details.js"></script>
     {% include 'footer.html' %}
 </body>

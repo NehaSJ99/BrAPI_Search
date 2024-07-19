@@ -3,119 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrainGenes| Brapi Search Tool</title>
+    <title>GrainGenes | Brapi Search Tool</title>
     <link rel="icon" href="static/images/GG3.png" type="image/x-icon"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <!-- Include the navbar -->
     {% include 'navbar.html' %}
 
     <!-- Page content -->
-    <div class="container">
-        <form id="search-form" onsubmit="performSearch(event)" style="display: flex; flex: 1;">
-            <div class="filter-box">
-                <!-- Databases Filter -->
-                <div class="filter-container">
-                    <h2 class="filters-heading">Database</h2>
-                    <input type="text" class="keyword-search" id="datasetSearch" placeholder="Search database...">
-                    <div class="selected-filters" id="selectedFilters"></div> <!-- Move selected filters here -->
-                    <div class="checkbox-container datasets-container" id="datasetContainer">
-                        <!-- Server checkboxes -->
-                        {% for title, info in server_info|dictsort %}
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="servers[]" value="{{ title }}" onclick="toggleFilter(event)">
-                            {{ title }}
-                            <span class="checkmark"></span>
-                        </label>
-                        {% endfor %}
+    <div class="container mt-4">
+        <form id="search-form" onsubmit="performSearch(event)">
+            <div class="row justify-content-center">
+                <div class="col-md-3">
+                    <!-- Filters -->
+                    <div class="filter-box">
+                        <!-- Databases Filter -->
+                        <div class="filter-container">
+                            <h2 class="filters-heading">Database</h2>
+                            <input type="text" class="form-control mb-3" id="datasetSearch" placeholder="Search database...">
+                            <div class="selected-filters mb-3" id="selectedFilters"></div>
+                            <div class="checkbox-container datasets-container mb-3" id="datasetContainer">
+                                {% for title, info in server_info|dictsort %}
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="servers[]" value="{{ title }}" onclick="toggleFilter(event)">
+                                    <label class="form-check-label">{{ title }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="clearDatasets">Clear All</button>
+                        </div>
+
+                        <!-- Search for Filter -->
+                        <div class="filter-container">
+                            <h2 class="filters-heading">Data Type</h2>
+                            <input type="text" class="form-control mb-3" id="searchForSearch" placeholder="Search Datatype...">
+                            <div class="checkbox-container searchfor-container mb-3" id="searchForContainer">
+                                <div class="form-check">
+                                    <input type="checkbox" name="search_for" value="germplasm" class="form-check-input" onclick="toggleFilter(event)">
+                                    <label class="form-check-label">Germplasm</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="search_for" value="traits" class="form-check-input" onclick="toggleFilter(event)">
+                                    <label class="form-check-label">Traits</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="search_for" value="trials" class="form-check-input" onclick="toggleFilter(event)">
+                                    <label class="form-check-label">Trials</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" class="clear-button" id="clearDatasets">Clear All</button>
                 </div>
-    
-                <!-- Search for Filter -->
-                <div class="filter-container">
-                    <h2 class="filters-heading">Data Type</h2>
-                    <input type="text" class="keyword-search" id="searchForSearch" placeholder="Search Datatype...">
-                    <div class="checkbox-container searchfor-container" id="searchForContainer">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="search_for" value="germplasm" class="single-radio" onclick="toggleFilter(event)">
-                            Germplasm
-                            <span class="checkmark"></span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="search_for" value="traits" class="single-radio" onclick="toggleFilter(event)">
-                            Traits
-                            <span class="checkmark"></span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="search_for" value="trials" class="single-radio" onclick="toggleFilter(event)">
-                            Trials
-                            <span class="checkmark"></span>
-                        </label>
+
+                <div class="col-md-8 d-flex flex-column align-items-center">
+                    <!-- Search Box -->
+                    <div class="search-container mt-3 text-center">
+                        <h2>BrAPI Search Tool</h2>
+                        <div class="search-box-wrapper d-flex justify-content-center align-items-center">
+                            <input type="text" id="searchBox" name="query" class="form-control" placeholder="germplasmName, traits, trials">
+                            <button type="submit" class="btn btn-primary ml-2">Search</button>
+                        </div>
+                        <p id="errorQuery" class="text-danger mt-2" style="display: none;">Please enter a search query.</p>
+                        <p id="errorCheckbox" class="text-danger" style="display: none;">Please select at least one server.</p>
+                        <p id="errorRadio" class="text-danger" style="display: none;">Please select a search option.</p>
+                        <!-- Example buttons -->
+                        <div class="examples mt-3 d-flex justify-content-center align-items-center">
+                            <span>Examples:</span>
+                            <button type="button" class="btn btn-info ml-2" onclick="setExample('00H01D26', ['T3/Wheat'], 'germplasm')">Germplasm</button>
+                            <button type="button" class="btn btn-info ml-2" onclick="setExample('Germination', ['T3/Barley','T3/Wheat','T3/Oat'], 'traits')">Traits</button>
+                            <button type="button" class="btn btn-info ml-2" onclick="setExample('Cassava', ['T3/Barley'], 'trials')">Trials</button>
+                        </div>
+                    </div>
+
+                    <!-- Display search results here -->
+                    <div class="results-container mt-3" id="results-container" style="display: none;">
+                        <p>You searched for: <strong id="search-term-display"></strong></p>
+                        <div id="results-count"></div>
+                        <div id="grouped-results"></div>
+                        <a href="/" class="btn btn-link">Back to Search</a>
                     </div>
                 </div>
-            </div>
-    
-            <div class="search-container">
-                <h2>BrAPI Search Tool</h2>
-                <div class="search-box-wrapper">
-                    <input type="text" id="searchBox" name="query" class="search-box" placeholder="germplasmName, traits, trials">
-                    <button type="submit" class="search-button">Search</button>
-                </div>
-                <p id="errorQuery" class="error-message">Please enter a search query.</p>
-                <p id="errorCheckbox" class="error-message">Please select at least one server.</p>
-                <p id="errorRadio" class="error-message">Please select a search option.</p>
-                <!-- Example buttons -->
-                <div class="examples">
-                    <span>Examples:</span>
-                    <button type="button" class="example-button" onclick="setExample('00H01D26', ['T3/Wheat'], 'germplasm')">Germplasm</button>
-                    <button type="button" class="example-button" onclick="setExample('Germination', ['T3/Barley','T3/Wheat','T3/Oat'], 'traits')">Traits</button>
-                    <button type="button" class="example-button" onclick="setExample('Cassava', ['T3/Barley'], 'trials')">Trials</button>
-                </div>
-                <!-- Display search results here -->
-                <div class="results-container" id="results-container" style="display: none;">
-                    <p>You searched for: <strong id="search-term-display"></strong></p>
-                    <div id="results-count"></div>
-                    <div id="grouped-results"></div>
-                    <a href="/" class="back-link">Back to Search</a>
-                </div>        
             </div>
         </form>
-        
     </div>
-    
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/static/js/index.js"></script>
     <script>
         function setExample(example, databases, dataType) {
-    const searchBox = document.getElementById('searchBox');
-    searchBox.value = example;
+            const searchBox = document.getElementById('searchBox');
+            searchBox.value = example;
 
-    // Uncheck all checkboxes
-    const checkboxes = document.querySelectorAll('.checkbox-label input[type="checkbox"]');
-    checkboxes.forEach(checkbox => checkbox.checked = false);
+            // Uncheck all checkboxes
+            const checkboxes = document.querySelectorAll('.form-check-input');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
 
-    // Check the specific database checkboxes
-    databases.forEach(database => {
-        const databaseCheckbox = document.querySelector(`input[name="servers[]"][value="${database}"]`);
-        if (databaseCheckbox) {
-            databaseCheckbox.checked = true;
+            // Check the specific database checkboxes
+            databases.forEach(database => {
+                const databaseCheckbox = document.querySelector(`input[name="servers[]"][value="${database}"]`);
+                if (databaseCheckbox) {
+                    databaseCheckbox.checked = true;
+                }
+            });
+
+            // Check the specific data type checkbox
+            const dataTypeCheckbox = document.querySelector(`input[name="search_for"][value="${dataType}"]`);
+            if (dataTypeCheckbox) {
+                dataTypeCheckbox.checked = true;
+            }
         }
-    });
-
-    // Check the specific data type checkbox
-    const dataTypeCheckbox = document.querySelector(`input[name="search_for"][value="${dataType}"]`);
-    if (dataTypeCheckbox) {
-        dataTypeCheckbox.checked = true;
-    }
-
-    // Optionally, submit the form automatically
-    // document.getElementById('search-form').submit();
-}
-
     </script>
-{% include 'footer.html' %}
+    {% include 'footer.html' %}
 </body>
 </html>
