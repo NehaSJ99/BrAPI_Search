@@ -8,7 +8,6 @@ Welcome to the **BrAPI Search Tool** repository! This project is designed to pro
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
 
@@ -60,16 +59,6 @@ The BrAPI Search Tool, developed by the GrainGenes team, leverages the [BrAPI](h
 1. **Home Page**: Start your search by entering keywords or selecting filters.
 2. **Search Results**: View and interact with the search results displayed.
 3. **Details Page**: Click on individual items to view detailed information.
-
-## Contributing
-
-We welcome contributions from the community! If you'd like to contribute to this project, please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Commit your changes (`git commit -am 'Add new feature'`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Create a new Pull Request.
 
 ## License
 
