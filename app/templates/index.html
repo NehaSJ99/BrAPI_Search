@@ -7,6 +7,30 @@
     <link rel="icon" href="static/images/GG3.png" type="image/x-icon"/>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        .card-filter {
+            margin-bottom: 1rem;
+        }
+        .search-box-wrapper {
+            max-width: 100%;
+        }
+        .search-box {
+            width: 100%;
+        }
+        .results-container {
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+            padding: 1rem;
+        }
+        a {
+            color: #1a73e8; /* Google's link color */
+        }
+        a:hover {
+            color: #0c63e4; /* Darker shade for hover effect */
+        }
+    </style>
 </head>
 <body>
     <!-- Include the navbar -->
@@ -15,13 +39,13 @@
     <!-- Page content -->
     <div class="container mt-4">
         <form id="search-form" onsubmit="performSearch(event)">
-            <div class="row justify-content-center">
-                <div class="col-md-3">
+            <div class="row">
+                <div class="col-md-4">
                     <!-- Filters -->
-                    <div class="filter-box">
-                        <!-- Databases Filter -->
-                        <div class="filter-container">
-                            <h2 class="filters-heading">Database</h2>
+                    <div class="card card-filter">
+                        <div class="card-body">
+                            <!-- Databases Filter -->
+                            <h5 class="card-title">Database</h5>
                             <input type="text" class="form-control mb-3" id="datasetSearch" placeholder="Search database...">
                             <div class="selected-filters mb-3" id="selectedFilters"></div>
                             <div class="checkbox-container datasets-container mb-3" id="datasetContainer">
@@ -34,10 +58,12 @@
                             </div>
                             <button type="button" class="btn btn-secondary" id="clearDatasets">Clear All</button>
                         </div>
+                    </div>
 
-                        <!-- Search for Filter -->
-                        <div class="filter-container">
-                            <h2 class="filters-heading">Data Type</h2>
+                    <!-- Search for Filter -->
+                    <div class="card card-filter">
+                        <div class="card-body">
+                            <h5 class="card-title">Data Type</h5>
                             <input type="text" class="form-control mb-3" id="searchForSearch" placeholder="Search Datatype...">
                             <div class="checkbox-container searchfor-container mb-3" id="searchForContainer">
                                 <div class="form-check">
@@ -57,13 +83,13 @@
                     </div>
                 </div>
 
-                <div class="col-md-8 d-flex flex-column align-items-center">
+                <div class="col-md-8">
                     <!-- Search Box -->
                     <div class="search-container mt-3 text-center">
-                        <h2>BrAPI Search Tool</h2>
+                        <h3>BrAPI Search Tool</h3>
                         <div class="search-box-wrapper d-flex justify-content-center align-items-center">
-                            <input type="text" id="searchBox" name="query" class="form-control" placeholder="germplasmName, traits, trials">
-                            <button type="submit" class="btn btn-primary ml-2">Search</button>
+                            <input type="text" id="searchBox" name="query" class="form-control search-box" placeholder="germplasmName, traits, trials">
+                            <button type="submit" class="btn btn-primary ml-2" id="search-button">Search</button>
                         </div>
                         <p id="errorQuery" class="text-danger mt-2" style="display: none;">Please enter a search query.</p>
                         <p id="errorCheckbox" class="text-danger" style="display: none;">Please select at least one server.</p>
@@ -80,44 +106,46 @@
                     <!-- Display search results here -->
                     <div class="results-container mt-3" id="results-container" style="display: none;">
                         <p>You searched for: <strong id="search-term-display"></strong></p>
-                        <div id="results-count"></div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p id="results-count"></p>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <label>Filter by Server: </label>
+                                <div id="serverFilterContainer" class="d-inline-block">
+                                    <!-- Server filter checkboxes will be dynamically populated -->
+                                </div>
+                            </div>
+                        </div>
                         <div id="grouped-results"></div>
-                        <a href="/" class="btn btn-link">Back to Search</a>
+                        <!-- Pagination controls -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class="page-item disabled">
+                                    <span class="page-link">Previous</span>
+                                </li>
+                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </form>
     </div>
 
+    <!-- Include the footer -->
+    {% include 'footer.html' %}
+
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/static/js/index.js"></script>
-    <script>
-        function setExample(example, databases, dataType) {
-            const searchBox = document.getElementById('searchBox');
-            searchBox.value = example;
-
-            // Uncheck all checkboxes
-            const checkboxes = document.querySelectorAll('.form-check-input');
-            checkboxes.forEach(checkbox => checkbox.checked = false);
-
-            // Check the specific database checkboxes
-            databases.forEach(database => {
-                const databaseCheckbox = document.querySelector(`input[name="servers[]"][value="${database}"]`);
-                if (databaseCheckbox) {
-                    databaseCheckbox.checked = true;
-                }
-            });
-
-            // Check the specific data type checkbox
-            const dataTypeCheckbox = document.querySelector(`input[name="search_for"][value="${dataType}"]`);
-            if (dataTypeCheckbox) {
-                dataTypeCheckbox.checked = true;
-            }
-        }
-    </script>
-    {% include 'footer.html' %}
+    <script src="/static/js/search.js"></script>
 </body>
 </html>

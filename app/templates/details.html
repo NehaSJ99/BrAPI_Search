@@ -3,62 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrainGenes | Brapi Search Tool - Details</title>
+    <title>GrainGenes | BrAPI Search Tool - Details</title>
     <link rel="icon" href="{{ url_for('static', filename='images/GG3.png') }}" type="image/x-icon"/>
 
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .disabled-link {
-            pointer-events: none;
-            color: #6c757d;
-            background-color: #e9ecef;
-            border-color: #e9ecef;
-        }
-    </style>
 </head>
 <body>
     <!-- Include the navbar -->
     {% include 'navbar.html' %}
 
     <!-- Page content -->
-    <div class="container mt-5">
+    <div class="container mt-2 mb-5">
         <div class="card">
-            <div class="card-body">
-                <h2 class="card-title text-center">Sample Details</h2>
-                <ul class="list-group list-group-flush">
-                    {% for key, value in sample|dictsort %}
-                        {% if value and key != 'base_url' and key != 'pedigree' and key != 'progeny' %}
-                            <li class="list-group-item">
-                                <strong>{{ key }}</strong>: {{ value }}
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
+            <div class="card-body position-relative">
+                
+                <!-- Dynamic Heading -->
+                <h3 class="card-title text-center mt-1">
+                    Details of 
+                    {% if sample.defaultDisplayName %}
+                        {{ sample.defaultDisplayName }}
+                    {% elif sample.traitName %}
+                        {{ sample.traitName }}
+                    {% elif sample.trialName %}
+                        {{ sample.trialName }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                    ({{ server_name }})
+                </h3>
+                
+                <!-- Details in table format -->
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                        {% for key, value in sample|dictsort %}
+                            {% if value and key != 'base_url' and key != 'pedigree' and key != 'progeny' %}
+                                <tr class="detail-value">
+                                    <th>{{ key }}</th>
+                                    <td>
+                                        {% if value is mapping %}
+                                            <ul>
+                                                {% for sub_key, sub_value in value.items() %}
+                                                    <li>{{ sub_key }}: {{ sub_value }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% elif value is iterable and value is not string %}
+                                            <ul>
+                                                {% for item in value %}
+                                                    <li>{{ item }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            {{ value }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+
                 {% set has_pedigree = sample.get('pedigree', 'No') == 'Yes' %}
                 {% set has_progeny = sample.get('progeny', 'No') == 'Yes' %}
                 {% if sample.germplasmDbId %}
                     <div class="mt-4 text-center">
-                        <a href="{{ url_for('main.germplasm_pedigree', germplasm_id=sample.germplasmDbId, base_url=sample.base_url) }}"
-                           class="btn btn-primary {% if not has_pedigree %}disabled-link{% endif %}"
-                           {% if not has_pedigree %}onclick="return false;"{% endif %}>Check Pedigree</a>
+                        <a href="{{ url_for('main.germplasm_pedigree', germplasm_id=sample.germplasmDbId, base_url=sample.base_url, server_name=server_name) }}"
+                           class="btn btn-primary {% if not has_pedigree %}disabled{% endif %}"
+                           {% if not has_pedigree %}tabindex="-1" aria-disabled="true"{% endif %}>Check Pedigree</a>
 
-                        <a href="{{ url_for('main.germplasm_progeny', germplasm_id=sample.germplasmDbId, base_url=sample.base_url) }}"
-                           class="btn btn-primary {% if not has_progeny %}disabled-link{% endif %}"
-                           {% if not has_progeny %}onclick="return false;"{% endif %}>Check Progeny</a>
+                        <a href="{{ url_for('main.germplasm_progeny', germplasm_id=sample.germplasmDbId, base_url=sample.base_url, server_name=server_name, germplasm_name=sample.defaultDisplayName) }}"
+                           class="btn btn-primary {% if not has_progeny %}disabled{% endif %}"
+                           {% if not has_progeny %}tabindex="-1" aria-disabled="true"{% endif %}>Check Progeny</a>
                     </div>
                 {% endif %}
-                <div class="mt-4 text-center">
-                    <a href="/" class="btn btn-success">Back to Search Results</a>
-                </div>
             </div>
         </div>
     </div>
 
+    <!-- Include the footer -->
+    {% include 'footer.html' %}
+
+    <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="/static/js/details.js"></script>
-    {% include 'footer.html' %}
+    <script src="{{ url_for('static', filename='js/details.js') }}"></script>
 </body>
 </html>

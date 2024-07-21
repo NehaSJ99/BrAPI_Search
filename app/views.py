@@ -97,13 +97,16 @@ def search():
                     result['base_url'] = base_url
                     result['_id'] = str(result['_id'])  # Convert ObjectId to string for JSON serialization
                     search_results.append(result)
+                    #print(search_results)
     return jsonify(search_results)
 
 @main.route("/details/<string:detail_type>/<string:detail_id>")
 def details(detail_type, detail_id):
     logging.info(f"Detail Type: {detail_type}, Detail ID: {detail_id}")
     base_url = request.args.get("base_url")
+    server_name = request.args.get("server_name")
     print(f'base url : {base_url}')
+    print(f'server_name : {server_name}')
     if detail_type and detail_id and base_url:
         if detail_type == "germplasm":
             searched_results_germplasm = getGermplasmSearch(detail_id, base_url)
@@ -124,7 +127,7 @@ def details(detail_type, detail_id):
 
                 logging.info(f"Germplasm Details found for : {detail_id}")
                 logging.info("3. Displaying details on Details page")
-                return render_template("details.html", sample=searched_results_germplasm[0], detail_type=detail_type)
+                return render_template("details.html", sample=searched_results_germplasm[0], detail_type=detail_type, server_name=server_name)
             
         elif detail_type == "trait":
             print(f' Start Searching for : {detail_type} : {detail_id} in url : {base_url}')
@@ -138,7 +141,8 @@ def details(detail_type, detail_id):
         if searched_results:
             logging.info(f"Germplasm Details found for : {detail_id}")
             logging.info("3. Displaying results on Details page")
-            return render_template("details.html", sample=searched_results, detail_type=detail_type)
+            print(searched_results)
+            return render_template("details.html", sample=searched_results, detail_type=detail_type, server_name=server_name)
     
     logging.warning("Sample not found")
     return "Sample not found", 404
@@ -147,28 +151,31 @@ def details(detail_type, detail_id):
 def germplasm_pedigree(germplasm_id):
     logging.info(f"Germplasm Pedigree ID: {germplasm_id}")
     base_url = request.args.get("base_url")
-    
+    server_name = request.args.get("server_name")
     if germplasm_id and base_url:
         pedigree_info = getGermplasmPedigree(germplasm_id, base_url)
         if pedigree_info:
             logging.info(f"Pedigree Information found for : {germplasm_id}")
             logging.info(f"Going on pedigree page")
-            return render_template("pedigree.html", pedigree=pedigree_info)
+            return render_template("pedigree.html", pedigree=pedigree_info, detail_type='germplasm', detail_id=germplasm_id, base_url=base_url, server_name=server_name)
     
     logging.warning("Pedigree information not found")
-    return "Pedigree information not found", 404
+    return render_template("404.html")
 
 @main.route("/germplasm/<germplasm_id>/progeny")
 def germplasm_progeny(germplasm_id):
     logging.info(f"Germplasm Progeny ID: {germplasm_id}")
     base_url = request.args.get("base_url")
-    
+    server_name = request.args.get("server_name")
+    germplasm_name = request.args.get("germplasm_name")
+
+    print(germplasm_name)
     if germplasm_id and base_url:
         progeny_info = getGermplasmProgeny(germplasm_id, base_url)
         if progeny_info:
             logging.info(f"Progeny Information found for : {germplasm_id}")
             logging.info(f"Going on progeny page")
-            return render_template("progeny.html", progeny=progeny_info)
+            return render_template("progeny.html", progeny=progeny_info, detail_type='germplasm', detail_id=germplasm_id, germplasm_name=germplasm_name, base_url=base_url, server_name=server_name)
     
     logging.warning("Progeny information not found")
-    return "Progeny information not found", 404
+    return render_template("404.html")

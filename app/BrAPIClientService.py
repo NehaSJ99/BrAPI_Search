@@ -32,7 +32,7 @@ def getGermplasmSearch(search_param, base_url):
         # Handle specific HTTP error codes if necessary
     # Clean the searched results before returning
     cleaned_results = clean_data(searched_results)
-    #print(f"Searched Results: {cleaned_results}")
+    print(f"Searched Results: {cleaned_results}")
     
     return cleaned_results
 

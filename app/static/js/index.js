@@ -107,141 +107,54 @@ function removeFilter(filter, name) {
     updateSelectedFilters();
 }
 
-// Perform Search
-function performSearch(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
-
-    // Validate the form
-    const searchBox = document.getElementById('searchBox');
-    const servers = document.querySelectorAll('input[name="servers[]"]:checked');
-    const searchFor = document.querySelectorAll('input[name="search_for"]:checked');
-
-    let valid = true;
-    const query = searchBox.value.trim();
-    const regex = /^[a-zA-Z0-9\s]+$/;
-
-    if (!regex.test(query)) {
-        alert('Invalid input. Only alphanumeric characters and spaces are allowed.');
-        clearInput();
-        return false;
-    }
-
-    if (!query) {
-        document.getElementById('errorQuery').style.display = 'block';
-        valid = false;
-    } else {
-        document.getElementById('errorQuery').style.display = 'none';
-    }
-
-    if (servers.length === 0) {
-        document.getElementById('errorCheckbox').style.display = 'block';
-        valid = false;
-    } else {
-        document.getElementById('errorCheckbox').style.display = 'none';
-    }
-
-    if (searchFor.length === 0) {
-        document.getElementById('errorRadio').style.display = 'block';
-        valid = false;
-    } else {
-        document.getElementById('errorRadio').style.display = 'none';
-    }
-
-    if (!valid) return;
-
-    // Prepare data to send in the POST request
-    const formData = new FormData();
-    formData.append('query', query);
-    servers.forEach(server => {
-        formData.append('servers[]', server.value);
-    });
-    searchFor.forEach(item => {
-        formData.append('search_for', item.value);
-    });
-
-    fetch('/search', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        const resultsContainer = document.getElementById('results-container');
-        const searchTermDisplay = document.getElementById('search-term-display');
-        const resultsCount = document.getElementById('results-count');
-        const groupedResults = document.getElementById('grouped-results');
-
-        // Update the search term display
-        searchTermDisplay.textContent = query;
-
-        // Clear previous results
-        resultsCount.innerHTML = '';
-        groupedResults.innerHTML = '';
-
-        if (data.length === 0) {
-            resultsCount.textContent = 'No results found.';
-        } else {
-            const resultCount = data.length;
-            resultsCount.textContent = `${resultCount} result(s) found`;
-
-            // Group results by server_name
-            const groupedData = data.reduce((acc, item) => {
-                if (!acc[item.server_name]) {
-                    acc[item.server_name] = [];
-                }
-                acc[item.server_name].push(item);
-                return acc;
-            }, {});
-
-            for (const [serverName, samples] of Object.entries(groupedData)) {
-                const resultsList = document.createElement('ul');
-                resultsList.className = 'results-list';
-                
-                samples.forEach(sample => {
-                    const listItem = document.createElement('li');
-                    let url = '';
-                    
-                    if (sample.germplasmDbId) {
-                        url = `/details/germplasm/${sample.germplasmDbId}?base_url=${encodeURIComponent(sample.base_url)}`;
-                        listItem.innerHTML = `<a href="#" data-url="${url}"><span class="highlight">${sample.defaultDisplayName}</span> (${sample.species})</a> <span class="server-name">from ${serverName}</span>`;
-                    } else if (sample.traitDbId) {
-                        url = `/details/trait/${sample.traitDbId}?base_url=${encodeURIComponent(sample.base_url)}`;
-                        listItem.innerHTML = `<a href="#" data-url="${url}"><span class="highlight">${sample.traitName}</span> (Trait ID: ${sample.traitDbId})</a> <span class="server-name">from ${serverName}</span>`;
-                    } else if (sample.trialDbId) {
-                        url = `/details/trial/${sample.trialDbId}?base_url=${encodeURIComponent(sample.base_url)}`;
-                        listItem.innerHTML = `<a href="#" data-url="${url}"><span class="highlight">${sample.trialName}</span> (Trial ID: ${sample.trialDbId})</a> <span class="server-name">from ${serverName}</span>`;
-                    }
-
-                    listItem.querySelector('a').addEventListener('click', function(event) {
-                        event.preventDefault();
-                        window.location.href = this.getAttribute('data-url');
-                    });
-
-                    resultsList.appendChild(listItem);
-                });
-
-                groupedResults.appendChild(resultsList);
-            }
-        }
-
-        // Show the results container
-        resultsContainer.style.display = 'block';
-    })
-    .catch(error => {
-        console.error('Error fetching search results:', error);
-        const resultsContainer = document.getElementById('results-container');
-        resultsContainer.innerHTML = 'An error occurred while fetching results.';
-        resultsContainer.style.display = 'block';
-    });
-}
-
 // Clear Input Fields
-function clearInput() { 
+function clearInput() {
     document.getElementById("search-form").reset();
     updateSelectedFilters();
     updateClearButtonVisibility();
+    
+    // Hide results container after clearing
+    document.getElementById('results-container').style.display = 'none';
 }
 
 // Search Button Event Listener
-document.getElementById('search-button').addEventListener('click', function(event) {
-    performSearch(event);
-});
+const searchButton = document.getElementById('search-button');
+if (searchButton) {
+    searchButton.addEventListener('click', function(event) {
+        performSearch(event);
+    });
+} else {
+    console.error('Element with ID "search-button" not found.');
+}
+
+function setExample(example, databases, dataType) {
+    const searchBox = document.getElementById('searchBox');
+    searchBox.value = example;
+
+    // Clear all checkboxes
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+
+    // Check the specified databases
+    databases.forEach(db => {
+        const checkbox = document.querySelector(`input[name="servers[]"][value="${db}"]`);
+        if (checkbox) {
+            checkbox.checked = true;
+        }
+    });
+
+    // Clear all radio buttons
+    const radioButtons = document.querySelectorAll('input[name="search_for"]');
+    radioButtons.forEach(radio => radio.checked = false);
+
+    // Check the specified data type radio button
+    const radioButton = document.querySelector(`input[name="search_for"][value="${dataType}"]`);
+    if (radioButton) {
+        radioButton.checked = true;
+    }
+}
+
+
+
+
+

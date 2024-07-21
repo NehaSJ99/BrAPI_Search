@@ -5,103 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrainGenes | BrAPI Search Tool - Pedigree</title>
     <link rel="icon" href="static/images/GG3.png" type="image/x-icon"/>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .pedigree-container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .pedigree-item {
-            margin-bottom: 10px;
-        }
-        .highlight {
-            color: #996515;
-            font-weight: bold;
-        }
-        .back-link {
-            display: block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            text-align: center;
-            width: 150px;
-            margin: 20px auto;
-            transition: background-color 0.3s ease;
-        }
-        .back-link:hover {
-            background-color: #218838;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
 </head>
 <body>
     <!-- Include the navbar -->
     {% include 'navbar.html' %}
 
     <!-- Page content -->
-    <div class="pedigree-container">
-        <h2>Germplasm Pedigree</h2>
-        {% if pedigree %}
-            {% for key, value in pedigree.items() %}
-                {% if key == 'siblings' and value %}
-                    <h2>Siblings</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Germplasm Name</th>
-                                <th>Germplasm ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for sibling in value %}
-                                <tr>
-                                    <td>{{ sibling.germplasmName }}</td>
-                                    <td>{{ sibling.germplasmDbId }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+    <div class="container mt-5 mb-5">
+        <div class="card">
+            <div class="card-body">
+                <!-- Back to Details Link -->
+                <div class="back-link">
+                    <a href="{{ url_for('main.details', detail_type=detail_type, detail_id=detail_id, base_url=base_url, server_name=server_name) }}" class="btn btn-link">← Back to Details</a>
+                </div>
+                <h2 class="card-title text-center">Germplasm Pedigree</h2>
+
+                {% if pedigree %}
+                    {% for key, value in pedigree.items() %}
+                        {% if key == 'siblings' and value %}
+                            <h3>Siblings</h3>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Germplasm Name</th>
+                                            <th>Germplasm ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for sibling in value %}
+                                            <tr>
+                                                <td>{{ sibling.germplasmName }}</td>
+                                                <td>{{ sibling.germplasmDbId }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="mb-3">
+                                <strong>{{ key }}:</strong> <span>{{ value }}</span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 {% else %}
-                    <div class="pedigree-item">
-                        <strong>{{ key }}:</strong> <span>{{ value }}</span>
-                    </div>
+                    <p>No pedigree information available.</p>
                 {% endif %}
-            {% endfor %}
-        {% else %}
-            <p>No pedigree information available.</p>
-        {% endif %}
-        <a href="/" class="back-link">Back to Search</a>
+            </div>
+        </div>
     </div>
+
     <!-- Include the footer -->
     {% include 'footer.html' %}
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

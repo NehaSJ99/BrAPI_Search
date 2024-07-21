@@ -18,6 +18,11 @@
             text-align: center;
             display: block;
             margin-top: -10px;
+            font-size: 0.75rem; /* Adjust the font size */
+        }
+        .navbar {
+            height: 60px; /* Adjust height */
+            padding: 0.5rem 1rem; /* Adjust padding */
         }
     </style>
 </head>
@@ -26,7 +31,7 @@
         <div class="container">
             <div class="d-flex flex-column align-items-center">
                 <a class="navbar-brand" href="https://wheat.pw.usda.gov/GG3/">
-                    <img src="{{ url_for('static', filename='images/gglogo.png') }}" height="40" alt="GrainGenes">
+                    <img src="{{ url_for('static', filename='images/gglogo.png') }}" height="30" alt="GrainGenes">
                 </a>
                 <span class="navbar-text">A Database for Triticeae and Avena</span>
             </div>

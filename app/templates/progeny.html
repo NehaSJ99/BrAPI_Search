@@ -4,72 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrainGenes | BrAPI Search Tool - Progeny</title>
-    <link rel="icon" href="static/images/GG3.png" type="image/x-icon"/>
+    <link rel="icon" href="{{ url_for('static', filename='images/GG3.png') }}" type="image/x-icon"/>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .progeny-container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .progeny-item {
-            margin-bottom: 10px;
-        }
-        .highlight {
-            color: #996515;
-            font-weight: bold;
-        }
+        /* Custom style for the back link */
         .back-link {
-            display: block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            text-align: center;
-            width: 150px;
-            margin: 20px auto;
-            transition: background-color 0.3s ease;
-        }
-        .back-link:hover {
-            background-color: #218838;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000; /* Ensure it's on top */
         }
     </style>
-    
 </head>
 <body>
     <!-- Include the navbar -->
     {% include 'navbar.html' %}
 
     <!-- Page content -->
-    <div class="progeny-container">
-        <h2>Germplasm progeny</h2>
-        {% if progeny %}
-            {% for key, value in progeny.items() %}
-                <div class="progeny-item">
-                    <strong>{{ key }}:</strong> <span>{{ value }}</span>
+    <div class="container mt-5 mb-5">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">
+                    Progeny of {{ germplasm_name }} ({{server_name }})
+                </h3>
+
+                <!-- Back to Details Link -->
+                <div class="back-link">
+                    <a href="{{ url_for('main.details', detail_type=detail_type, detail_id=detail_id, base_url=base_url, server_name=server_name) }}" class="btn btn-link">← Back to Details</a>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>No progeny information available.</p>
-        {% endif %}
-        <a href="/" class="back-link">Back to Search</a>
+                
+                <!-- Details in table format -->
+                {% if progeny %}
+                    <table class="table table-bordered table-striped mt-4">
+                        <tbody>
+                            {% for key, value in progeny.items() %}
+                                <tr>
+                                    <th>{{ key }}</th>
+                                    <td>{{ value }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-center mt-4">No progeny information available.</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
+
     <!-- Include the footer -->
     {% include 'footer.html' %}
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

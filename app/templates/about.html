@@ -7,19 +7,81 @@
     <link rel="icon" href="{{ url_for('static', filename='images/GG3.png') }}" type="image/x-icon"/>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .highlight-text {
+            color: #ff5722; /* Highlight color */
+            font-weight: bold;
+        }
+        .about-section {
+            background: #f9f9f9;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-custom {
+            background-color: #ff5722;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+        .btn-custom:hover {
+            background-color: #e64a19;
+            color: #fff;
+        }
+        .card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .card-body {
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
     <!-- Include the navbar -->
     {% include 'navbar.html' %}
 
     <!-- Page content -->
-    <div class="container my-4">
-        <div class="card p-4 shadow-sm border-0">
-            <h1 class="display-4 text-center mb-4">About BrAPI Search Tool</h1>
-            <p>GrainGenes, a database for Triticeae and Avena, is a comprehensive resource for molecular and phenotypic information for wheat, barley, rye, and oat. It is a digital platform that serves small grains research communities as their central data repository and as a facilitator for community activities.</p>
-            <p><a href="https://brapi.org" target="_blank" class="btn btn-link">BrAPI</a> is a standardized RESTful web service API specification for communicating plant breeding data. BrAPI allows for easy data sharing between databases and tools involved in plant breeding.</p>
-            <p>BrAPI Search Tool by the GrainGenes team provides a platform to search data types such as germplasm, traits, and trials in various databases by leveraging BrAPI Interface.</p>
-            <p>To access code and scripts, please visit <a href="https://github.com/NehaSJ99/BrAPI_Search" target="_blank" class="btn btn-link">GitHub</a>.</p>
+    <div class="container my-3">
+        <!-- First row: Larger container for BrAPI Search Tool -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-8">
+                <div class="card about-section">
+                    <div class="card-body">
+                        <h2 class="highlight-text">About BrAPI Search Tool</h2>
+                        <p>The BrAPI Search Tool, developed by the GrainGenes team, leverages the BrAPI Interface to provide a unified platform for searching various data types, including germplasm, traits, and trials across multiple databases.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second row: Smaller containers for GrainGenes and BrAPI -->
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-6 mb-4">
+                <div class="card about-section">
+                    <div class="card-body">
+                        <h2 class="highlight-text">About GrainGenes</h2>
+                        <p>GrainGenes is a comprehensive database for Triticeae and Avena, providing extensive molecular and phenotypic information for wheat, barley, rye, and oat. It serves as a central data repository and facilitates community activities within small grains research.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="card about-section">
+                    <div class="card-body">
+                        <h2 class="highlight-text">About BrAPI</h2>
+                        <p>BrAPI is a standardized RESTful web service API specification designed for communicating plant breeding data. It enables seamless data sharing across different databases and tools involved in plant breeding.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GitHub link -->
+        <div class="text-center mt-4">
+            <p>To access the code and scripts for this project, please visit our <a href="https://github.com/NehaSJ99/BrAPI_Search" target="_blank" class="btn btn-custom">GitHub</a>.</p>
         </div>
     </div>
 
