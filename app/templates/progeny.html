@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrainGenes | BrAPI Search Tool - Progeny</title>
+    <title>GrainGenes | BrAPI Progeny Page</title>
     <link rel="icon" href="{{ url_for('static', filename='images/GG3.png') }}" type="image/x-icon"/>
 
     <!-- Bootstrap CSS -->
@@ -27,11 +27,11 @@
     {% include 'navbar.html' %}
 
     <!-- Page content -->
-    <div class="container mt-5 mb-5">
+    <div class="container mt-2 mb-5">
         <div class="card">
             <div class="card-body">
                 <h3 class="card-title text-center">
-                    Progeny of {{ germplasm_name }} ({{server_name }})
+                    Progeny of {{ germplasm_name }} ({{ server_name }})
                 </h3>
 
                 <!-- Back to Details Link -->
@@ -41,16 +41,78 @@
                 
                 <!-- Details in table format -->
                 {% if progeny %}
-                    <table class="table table-bordered table-striped mt-4">
-                        <tbody>
-                            {% for key, value in progeny.items() %}
-                                <tr>
-                                    <th>{{ key }}</th>
-                                    <td>{{ value }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    {% macro render_table(data) %}
+                        {% if data is iterable and data is not string %}
+                            {% if data is mapping %}
+                                <!-- Handle dictionary (mapping) -->
+                                <table class="table table-bordered table-striped mt-4">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Key</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for key, value in data.items() %}
+                                            <tr>
+                                                <td>{{ key }}</td>
+                                                <td>
+                                                    {% if key == 'germplasmDbId' %}
+                                                        <a href="{{ url_for('main.details', detail_type='germplasm', detail_id=value, base_url=base_url, server_name=server_name) }}" target="_blank">
+                                                            {{ value }}
+                                                        </a>
+                                                    {% elif value is iterable and value is not string %}
+                                                        {{ render_table(value) }}
+                                                    {% else %}
+                                                        {{ value }}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% elif data is sequence %}
+                                <!-- Handle list (sequence) -->
+                                <table class="table table-bordered table-striped mt-4">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            {% for key in data[0].keys() %}
+                                                <th>{{ key }}</th>
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in data %}
+                                            <tr>
+                                                {% for key, value in item.items() %}
+                                                    <td>
+                                                        {% if key == 'germplasmDbId' %}
+                                                            <a href="{{ url_for('main.details', detail_type='germplasm', detail_id=value, base_url=base_url, server_name=server_name) }}" target="_blank">
+                                                                {{ value }}
+                                                            </a>
+                                                        {% elif value is iterable and value is not string %}
+                                                            {{ render_table(value) }}
+                                                        {% else %}
+                                                            {{ value }}
+                                                        {% endif %}
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <!-- Handle other types of iterables -->
+                                {{ data }}
+                            {% endif %}
+                        {% else %}
+                            <!-- Handle non-iterable data -->
+                            {{ data }}
+                        {% endif %}
+                    {% endmacro %}
+                    
+                    <!-- Render the table with progeny data -->
+                    {{ render_table(progeny) }}
                 {% else %}
                     <p class="text-center mt-4">No progeny information available.</p>
                 {% endif %}

@@ -1,28 +1,23 @@
 import requests
 
 def getGermplasmSearch(search_param, base_url):
-    url = f"{base_url}germplasm-search"
+    print('Into the getGermplasmSearch')
+    url = f"{base_url}germplasm/{search_param}"
+    print(f'url : {url}')
+    print(f'search param: {search_param}')
     searched_results = []
 
     try:
-        res = requests.get(url, params={'query': search_param})
+        res = requests.get(url)
+
         res.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
 
         if res.status_code == 200:
             res_json = res.json()
-            samples = res_json.get('result', {}).get('data', [])
-
-            if samples:
-                # Filter for exact matches in any relevant field
-                exact_matches = [
-                    sample for sample in samples if search_param in [
-                        sample.get('germplasmName', ''),
-                        sample.get('defaultDisplayName', ''),
-                        sample.get('germplasmDbId', '')
-                    ]
-                ]
-                searched_results.extend(exact_matches)
-
+            #print(res_json)
+            searched_results = res_json.get('result')
+            print("printing germplasm deatils fron the search function")
+            
     except requests.exceptions.RequestException as e:
         print(f"Error in getGermplasmSearch: {e}")
         # Optionally, raise or handle the error as needed
@@ -87,12 +82,13 @@ def search_trait(trait_id, base_url):
             res_json = res.json()
             samples = res_json.get('result', {})
             if samples:
-                print(f'samples found')
-
-            return samples
+                #print(f'samples found')
+                cleaned_results = clean_data(samples)
+                #print(f"Searched Results: {cleaned_results}")
+                return cleaned_results
         else:
             print(f"Error fetching trait: {res.status_code} {res.reason}")
-            return None
+        return None
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching trait: {e}")
@@ -108,9 +104,10 @@ def search_trial(trialDbId, base_url):
             res_json = res.json()
             samples = res_json.get('result', {})
             if samples:
-                print(f'samples found')
-
-            return samples
+                #print(f'samples found')
+                cleaned_results = clean_data(samples)
+                #print(f"Searched Results: {cleaned_results}")
+                return cleaned_results
         else:
             print(f"Error fetching trait: {res.status_code} {res.reason}")
             return None

@@ -50,7 +50,7 @@ def search():
     collection_name_list = []
     for server in selected_servers:
         col_name = server.replace("/", "_").lower() + "_" + search_for
-        collection_name_list.append((col_name, server))  # Store collection name and server as tuple
+        collection_name_list.append((col_name, server))
 
     logging.info("On the Search Page")
     logging.info(f"Search Query: {search_param}")
@@ -63,23 +63,23 @@ def search():
     search_fields = {
         "traits": ["traitName", "traitDbId"],
         "germplasm": ["genus", "germplasmDbId", "germplasmName", "species", "defaultDisplayName", "accessionNumber"],
-        "trials" : ["trialName","trialDbId", "programName", "programDbId", "commonCropName"]
+        "trials": ["trialName", "trialDbId", "programName", "programDbId", "commonCropName"]
     }
+
+    all_results = []
+    total_count = 0
 
     # Fetch data from MongoDB based on the input
     if collection_name_list:
         for collection_name, server in collection_name_list:
             collection = db[collection_name]
 
-            # Determine which fields to search based on the search_for parameter
             if search_for in search_fields:
                 query_conditions = [{field: {"$regex": search_param, "$options": "i"}} for field in search_fields[search_for]]
-                results = collection.find({
-                    "$or": query_conditions
-                })
+                results = collection.find({"$or": query_conditions})
 
+                # Add results to the list
                 for result in results:
-                    # Add server name and base URL to each result if collection name matches
                     if 't3_barley' in collection_name:
                         server_title = server_info['T3/Barley']['server-title']
                         base_url = server_info['T3/Barley']['api-urls'][0]
@@ -96,68 +96,71 @@ def search():
                     result['server_name'] = server_title
                     result['base_url'] = base_url
                     result['_id'] = str(result['_id'])  # Convert ObjectId to string for JSON serialization
-                    search_results.append(result)
-                    #print(search_results)
-    return jsonify(search_results)
+                    all_results.append(result)
+
+    # Return all results without pagination
+    return jsonify({
+        "results": all_results,
+        "total_count": len(all_results),
+        "total_pages": 1,  # Since we're handling pagination on the client side
+        "current_page": 1
+    })
+
 
 @main.route("/details/<string:detail_type>/<string:detail_id>")
 def details(detail_type, detail_id):
     logging.info(f"Detail Type: {detail_type}, Detail ID: {detail_id}")
     base_url = request.args.get("base_url")
     server_name = request.args.get("server_name")
-    print(f'base url : {base_url}')
-    print(f'server_name : {server_name}')
+    
     if detail_type and detail_id and base_url:
         if detail_type == "germplasm":
             searched_results_germplasm = getGermplasmSearch(detail_id, base_url)
             if searched_results_germplasm:
-                for result in searched_results_germplasm:
-                    result['base_url'] = base_url  # Ensure base_url is set for each result
-                    pedigree_info = getGermplasmPedigree(detail_id, base_url)
-                    if pedigree_info.get('siblings'):
-                        result['pedigree'] = 'Yes'
-                    else:
-                        result['pedigree'] = 'No'
+                searched_results_germplasm['base_url'] = base_url  # Ensure base_url is set for each result
+                
+                # Determine pedigree and progeny availability
+                pedigree_info = getGermplasmPedigree(detail_id, base_url)
+                has_pedigree = bool(pedigree_info.get('siblings'))
+                searched_results_germplasm['pedigree'] = 'Yes' if has_pedigree else 'No'
 
-                    progeny_info = getGermplasmProgeny(detail_id, base_url)
-                    if progeny_info.get('progeny'):
-                        result['progeny'] = 'Yes'
-                    else:
-                        result['progeny'] = 'No'
+                progeny_info = getGermplasmProgeny(detail_id, base_url)
+                has_progeny = bool(progeny_info.get('progeny'))
+                searched_results_germplasm['progeny'] = 'Yes' if has_progeny else 'No'
 
                 logging.info(f"Germplasm Details found for : {detail_id}")
                 logging.info("3. Displaying details on Details page")
-                return render_template("details.html", sample=searched_results_germplasm[0], detail_type=detail_type, server_name=server_name)
-            
+                return render_template("details.html", sample=searched_results_germplasm, detail_type=detail_type, server_name=server_name, has_pedigree=has_pedigree, has_progeny=has_progeny)
+        
         elif detail_type == "trait":
-            print(f' Start Searching for : {detail_type} : {detail_id} in url : {base_url}')
             searched_results = search_trait(detail_id, base_url)
         elif detail_type == "trial":
             searched_results = search_trial(detail_id, base_url)
         else:
             logging.warning("Invalid detail type")
-            return "Invalid detail type", 404
+            return render_template("404.html")
 
         if searched_results:
             logging.info(f"Germplasm Details found for : {detail_id}")
             logging.info("3. Displaying results on Details page")
-            print(searched_results)
             return render_template("details.html", sample=searched_results, detail_type=detail_type, server_name=server_name)
     
     logging.warning("Sample not found")
-    return "Sample not found", 404
+    return render_template("404.html")
+
 
 @main.route("/germplasm/<germplasm_id>/pedigree")
 def germplasm_pedigree(germplasm_id):
     logging.info(f"Germplasm Pedigree ID: {germplasm_id}")
     base_url = request.args.get("base_url")
     server_name = request.args.get("server_name")
+    germplasm_name = request.args.get("germplasm_name")
     if germplasm_id and base_url:
         pedigree_info = getGermplasmPedigree(germplasm_id, base_url)
         if pedigree_info:
             logging.info(f"Pedigree Information found for : {germplasm_id}")
             logging.info(f"Going on pedigree page")
-            return render_template("pedigree.html", pedigree=pedigree_info, detail_type='germplasm', detail_id=germplasm_id, base_url=base_url, server_name=server_name)
+            return render_template("pedigree.html", pedigree=pedigree_info, detail_type='germplasm', detail_id=germplasm_id, germplasm_name=germplasm_name, base_url=base_url, server_name=server_name)
     
     logging.warning("Pedigree information not found")
     return render_template("404.html")

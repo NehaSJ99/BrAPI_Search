@@ -3,11 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrainGenes | BrAPI Search Tool - Details</title>
+    <title>GrainGenes | BrAPI Details Page</title>
     <link rel="icon" href="{{ url_for('static', filename='images/GG3.png') }}" type="image/x-icon"/>
 
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Remove bullet points from lists */
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+    </style>
 </head>
 <body>
     <!-- Include the navbar -->
@@ -41,7 +48,41 @@
                                 <tr class="detail-value">
                                     <th>{{ key }}</th>
                                     <td>
-                                        {% if value is mapping %}
+                                        {% if key == 'externalReferences' %}
+                                            <!-- Subtable for externalReferences -->
+                                            <table class="table table-sm table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Reference ID</th>
+                                                        <th>Reference Source</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for ref in value %}
+                                                        <tr>
+                                                            <td>{{ ref.referenceId }}</td>
+                                                            <td>{{ ref.referenceSource }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        {% elif key == 'ontologyReference' %}
+                                        <!-- Subtable for ontologyReference -->
+                                        <table class="table table-sm table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>ontologyName</th>
+                                                    <th>ontologyDbId</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>{{ value.ontologyName }}</td>
+                                                    <td>{{ value.ontologyDbId }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        {% elif value is mapping %}
                                             <ul>
                                                 {% for sub_key, sub_value in value.items() %}
                                                     <li>{{ sub_key }}: {{ sub_value }}</li>
@@ -63,11 +104,9 @@
                     </tbody>
                 </table>
 
-                {% set has_pedigree = sample.get('pedigree', 'No') == 'Yes' %}
-                {% set has_progeny = sample.get('progeny', 'No') == 'Yes' %}
                 {% if sample.germplasmDbId %}
                     <div class="mt-4 text-center">
-                        <a href="{{ url_for('main.germplasm_pedigree', germplasm_id=sample.germplasmDbId, base_url=sample.base_url, server_name=server_name) }}"
+                        <a href="{{ url_for('main.germplasm_pedigree', germplasm_id=sample.germplasmDbId, base_url=sample.base_url, server_name=server_name, germplasm_name=sample.defaultDisplayName) }}"
                            class="btn btn-primary {% if not has_pedigree %}disabled{% endif %}"
                            {% if not has_pedigree %}tabindex="-1" aria-disabled="true"{% endif %}>Check Pedigree</a>
 

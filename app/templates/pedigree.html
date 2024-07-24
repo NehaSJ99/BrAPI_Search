@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrainGenes | BrAPI Search Tool - Pedigree</title>
-    <link rel="icon" href="static/images/GG3.png" type="image/x-icon"/>
+    <title>GrainGenes | BrAPI Pedigree page</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/GG3.png') }}" type="image/x-icon"/>
 
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -17,14 +17,16 @@
     {% include 'navbar.html' %}
 
     <!-- Page content -->
-    <div class="container mt-5 mb-5">
+    <div class="container mt-3 mb-5">
         <div class="card">
             <div class="card-body">
+                <h3 class="card-title text-center">
+                    Pedigree of {{ germplasm_name }} ({{ server_name }})
+                </h3>
                 <!-- Back to Details Link -->
                 <div class="back-link">
                     <a href="{{ url_for('main.details', detail_type=detail_type, detail_id=detail_id, base_url=base_url, server_name=server_name) }}" class="btn btn-link">← Back to Details</a>
                 </div>
-                <h2 class="card-title text-center">Germplasm Pedigree</h2>
 
                 {% if pedigree %}
                     {% for key, value in pedigree.items() %}
@@ -42,7 +44,11 @@
                                         {% for sibling in value %}
                                             <tr>
                                                 <td>{{ sibling.germplasmName }}</td>
-                                                <td>{{ sibling.germplasmDbId }}</td>
+                                                <td>
+                                                    <a href="{{ url_for('main.details', detail_type='germplasm', detail_id=sibling.germplasmDbId, base_url=base_url, server_name=server_name) }}" target="_blank">
+                                                        {{ sibling.germplasmDbId }}
+                                                    </a>
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>

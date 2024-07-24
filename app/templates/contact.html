@@ -7,6 +7,30 @@
     <link rel="icon" href="{{ url_for('static', filename='images/GG3.png') }}" type="image/x-icon"/>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .highlight-text {
+            color: #ff5722; /* Highlight color */
+            font-weight: bold;
+        }
+        .contact-section {
+            background: #f9f9f9;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-custom {
+            background-color: #ff5722;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+        .btn-custom:hover {
+            background-color: #e64a19;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
     <!-- Include the navbar -->
@@ -14,13 +38,19 @@
 
     <!-- Page content -->
     <div class="container my-4">
-        <div class="card p-4 shadow-sm border-0">
-            <h1 class="display-4 text-center mb-4">Contact Us</h1>
-            <p>If you have any questions, comments, or suggestions about the BrAPI Search Tool at GrainGenes, please feel free to contact:</p>
-            <ul class="list-unstyled">
-                <li class="mb-2"><strong>Neha Jagtap</strong> (njagtap at ncsu dot edu)</li>
-                <li><strong>The GrainGenes Team</strong> (feedback@graingenes.org)</li>
-            </ul>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card contact-section">
+                    <div class="card-body">
+                        <h1 class="display-4 text-center mb-4 highlight-text">Contact Us</h1>
+                        <p>If you have any questions, comments, or suggestions about the BrAPI Search Tool at GrainGenes, please feel free to contact:</p>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><strong>Neha Jagtap</strong> (njagtap at ncsu dot edu)</li>
+                            <li><strong>The GrainGenes Team</strong> (feedback@graingenes.org)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
