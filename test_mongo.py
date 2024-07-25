@@ -23,7 +23,7 @@ def read_data(server_name):
 def drop_collection(server_name):
     myclient = pymongo.MongoClient("mongodb://127.0.0.1:27017")
     mydb = myclient["brapidata"]
-    mycol = mydb[server_name + "_trials"]
+    mycol = mydb[server_name + "_traits"]
     mycol.drop()
 
 def find_data(server_name, data):
@@ -114,8 +114,8 @@ def find_in_all(data):
             print(f'No records found for "{data}" in {server_name}')
 
 # Example usage:
-read_all_data()
+#read_all_data()
 #write_all_data()
-#drop_all_collections()
+drop_all_collections()
 #keyword = input("Enter the keyword to search: ")
 #find_in_all(keyword)

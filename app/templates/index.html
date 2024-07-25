@@ -7,6 +7,8 @@
     <link rel="icon" href="static/images/GG3.png" type="image/x-icon"/>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
         /* Custom styles */
         .card-filter {
@@ -55,12 +57,20 @@
                                 {% for title, info in server_info|dictsort %}
                                 <div class="form-check">
                                     <input type="checkbox" class="form-check-input" name="servers[]" value="{{ title }}" onclick="toggleFilter(event)">
-                                    <label class="form-check-label">{{ title }}</label>
+                                    <label class="form-check-label">
+                                        {{ title }}
+                                        {% if info.server_status %}
+                                        <i class="bi bi-check-circle text-success" title="Server is up"></i>
+                                        {% else %}
+                                        <i class="bi bi-x-circle text-danger" title="Server is down"></i>
+                                        {% endif %}
+                                    </label>
                                 </div>
                                 {% endfor %}
                             </div>
                             <button type="button" class="btn btn-secondary" id="clearDatasets">Clear All</button>
                         </div>
+                         
                     </div>
 
                     <!-- Search for Filter -->

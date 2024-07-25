@@ -1,4 +1,4 @@
-from flask import request, render_template, Blueprint, jsonify
+from flask import request, render_template, Blueprint, jsonify, json
 import logging
 from .BrAPIClientService import getGermplasmSearch, search_trait, search_trial, getGermplasmPedigree, getGermplasmProgeny
 from .BrAPIs import fetch_server_apis
@@ -8,11 +8,15 @@ from bson.objectid import ObjectId
 
 main = Blueprint("main", __name__)
 
-server_info = {
-    'T3/Wheat': {'server-title': 'T3/Wheat', 'api-urls': ['https://wheat.triticeaetoolbox.org/brapi/v2/'], 'auth-required': False, 'server_status': True},
-    'T3/Oat': {'server-title': 'T3/Oat', 'api-urls': ['https://oat.triticeaetoolbox.org/brapi/v2/'], 'auth-required': False, 'server_status': True},
-    'T3/Barley': {'server-title': 'T3/Barley', 'api-urls': ['https://barley.triticeaetoolbox.org/brapi/v2/'], 'auth-required': False, 'server_status': True}
-}
+def load_server_info():
+    file_path = '/data/htdocs/brapi_flask/app/server_info.json'
+    try:
+        with open(file_path, 'r') as f:
+            server_info = json.load(f)
+        return server_info
+    except Exception as e:
+        print(f"Error loading server info: {e}")
+        return {}
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)  # Set log level as needed
@@ -28,6 +32,8 @@ print(db)
 
 @main.route("/", methods=['GET', 'POST'])
 def index():
+    server_info = load_server_info()
+    print(server_info)
     return render_template("index.html", server_info=server_info)
 
 @main.route('/about') 
@@ -40,6 +46,7 @@ def contactPage():
 
 @main.route("/search", methods=['POST'])
 def search():
+    server_info = load_server_info()
     search_results = []
 
     search_param = request.form.get("query")
