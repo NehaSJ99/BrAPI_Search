@@ -1,0 +1,16 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+
+# Environment variables
+.env
+
+# Configuration files
+config.py
+
+# Logs
+*.log
+
