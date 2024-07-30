@@ -3,9 +3,9 @@ let currentSearchResults = [];
 let currentSearchQuery = '';
 let resultsPerPage = 10; // Number of results per page
 let currentPage = 1; // Current page number
-let isSorted = false; // Initial sorting state
-let allFilterOptions = {}; // Store all unique filter options
 let originalSearchResults = []; // Add this line to store the original results
+let allServerOptions = []; // Declare globally or in a higher scope
+
 
 const serverLinks = {
     'T3/Barley': 'https://barley.triticeaetoolbox.org/',
@@ -80,18 +80,31 @@ function hideSpinner() {
     document.getElementById('loading-spinner').style.display = 'none';
 }
 
+
 // Modify displayResults to include a call to populateDatabaseFilterOptions
 function displayResults(query, data) {
     currentSearchResults = data;
     currentSearchQuery = query;
 
-    // Store the original data if it hasn't been stored yet
-    if (originalSearchResults.length === 0) {
-        originalSearchResults = [...data]; // Use spread operator to copy array
+    console.log('Data received in displayResults:', data);
+
+    // Ensure data is not empty and contains the expected structure
+    if (Array.isArray(data) && data.length > 0) {
+        if (originalSearchResults.length === 0) {
+            originalSearchResults = [...data];
+            allServerOptions = [...data]; // Ensure this line is executed
+            console.log('Data assigned to allServerOptions:', allServerOptions);
+        } else {
+            console.log('Skipping assignment of allServerOptions; already set.');
+        }
+    } else {
+        console.error('Data is not valid:', data);
     }
 
-    console.log('Total count:', data.totalCount); // Check total count
+    console.log('currentSearchResults', currentSearchResults);
+    console.log('currentSearchQuery', currentSearchQuery);
     console.log('Total Results:', data.length);
+    console.log('allServerOptions',allServerOptions)
 
     // Display the results container
     document.getElementById('results-container').style.display = 'block';
@@ -108,13 +121,12 @@ function displayResults(query, data) {
     const resultsCount = document.getElementById('results-count');
     resultsCount.innerHTML = data.length === 0 ? 'No results found.' : `${data.length} result(s) found`;
 
-    // Sort results if isSorted is true
-    const resultsToDisplay = isSorted ? sortResults(data) : data;
+    const resultsToDisplay = data
 
     // Display results for the current page
     const startIndex = (currentPage - 1) * resultsPerPage;
     const endIndex = Math.min(startIndex + resultsPerPage, data.length);
-    const currentResults = resultsToDisplay .slice(startIndex, endIndex);
+    const currentResults = resultsToDisplay.slice(startIndex, endIndex);
 
     // Create table for results
     const table = document.createElement('table');
@@ -170,6 +182,105 @@ function displayResults(query, data) {
 
     // Create and display pagination controls
     createPaginationControls(data.length);
+
+    // Call this when data is first loaded or a new search is performed
+    if (allServerOptions.length > 0) {
+        console.log('Populating database filter options with:', allServerOptions);
+        populateDatabaseFilterOptions(allServerOptions);
+    } else {
+        console.error('allServerOptions is empty. Skipping populateDatabaseFilterOptions.');
+    }
+
+}
+
+function filterResultsByDatabase() {
+    console.log('Entering filterResultsByDatabase');
+    const databaseFilter = document.getElementById('databaseFilter');
+    const selectedOptions = Array.from(databaseFilter.selectedOptions).map(option => option.value);
+
+    console.log('Selected filters:', selectedOptions); // Debug log
+
+    // Filter results based on selected options
+    const filteredResults = selectedOptions.includes('all') || selectedOptions.length === 0
+        ? originalSearchResults
+        : originalSearchResults.filter(result => selectedOptions.includes(result.server_name));
+
+    console.log('Filtered results:', filteredResults); // Debug log
+
+    // Display the filtered results
+    displayResults(currentSearchQuery, filteredResults);
+    console.log('----coming from display results function---'); // Debug log
+    console.log('-----Out of filter results function-----'); // Debug log
+    console.log('Exiting filterResultsByDatabase');
+}
+
+
+
+function populateDatabaseFilterOptions(data) {
+    const databaseFilter = document.getElementById('databaseFilter');
+    const databaseCounts = {};
+
+    // Count the occurrences of each server from the data
+    data.forEach(result => {
+        if (databaseCounts[result.server_name]) {
+            databaseCounts[result.server_name]++;
+        } else {
+            databaseCounts[result.server_name] = 1;
+        }
+    });
+
+    // Clear existing options
+    databaseFilter.innerHTML = '<option value="all">Filter by Server</option>';
+
+    // Add new options
+    Object.keys(databaseCounts).forEach(server => {
+        const option = document.createElement('option');
+        option.value = server;
+        option.textContent = `${server} (${databaseCounts[server]})`;
+        databaseFilter.appendChild(option);
+    });
+}
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const showResults = sessionStorage.getItem('showResults');
+    const searchResults = sessionStorage.getItem('searchResults');
+    const searchQuery = sessionStorage.getItem('searchQuery');
+
+    if (showResults === 'true' && searchResults) {
+        const results = JSON.parse(searchResults);
+        originalSearchResults = [...results];
+        displayResults(searchQuery, results);
+
+        if (allServerOptions.length > 0) {
+            populateDatabaseFilterOptions(allServerOptions);
+        } else {
+            console.error('allServerOptions is empty during page load. Skipping populateDatabaseFilterOptions.');
+        }
+    }
+
+    if (results) {
+        // Display results with new sorting state
+        displayResults(sessionStorage.getItem('searchQuery'), results);
+    }
+    
+    // Ensure filterResultsByDatabase is attached as an event listener
+    databaseFilter.addEventListener('change', filterResultsByDatabase);
+});
+
+
+//sorting results alphabetically
+function sortResults(data) {
+    return data.slice().sort((a, b) => {
+        // Handle cases where defaultDisplayName might be undefined
+        const nameA = (a.defaultDisplayName || '').toLowerCase();
+        const nameB = (b.defaultDisplayName || '').toLowerCase();
+
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+    });
 }
 
 function createPaginationControls(totalResults) {
@@ -258,110 +369,4 @@ function createPaginationControls(totalResults) {
     paginationContainer.appendChild(nextButton);
 }
 
-function filterResultsByDatabase() {
-    const databaseFilter = document.getElementById('databaseFilter');
-    const selectedOptions = Array.from(databaseFilter.selectedOptions).map(option => option.value);
-
-    console.log('Selected filters:', selectedOptions); // Debug log
-
-    // Filter results based on selected options
-    const filteredResults = selectedOptions.includes('all') || selectedOptions.length === 0
-        ? originalSearchResults
-        : originalSearchResults.filter(result => selectedOptions.includes(result.server_name));
-
-    console.log('Filtered results:', filteredResults); // Debug log
-
-    // Display the filtered results
-    displayResults(currentSearchQuery, filteredResults);
-}
-
-
-function populateDatabaseFilterOptions(data) {
-    const databaseFilter = document.getElementById('databaseFilter');
-    const databaseCounts = {};
-
-    // Count the occurrences of each server
-    data.forEach(result => {
-        if (databaseCounts[result.server_name]) {
-            databaseCounts[result.server_name]++;
-        } else {
-            databaseCounts[result.server_name] = 1;
-        }
-    });
-
-    // Clear existing options
-    databaseFilter.innerHTML = '<option value="all">Filter by Server</option>';
-
-    // Add new options
-    Object.keys(databaseCounts).forEach(server => {
-        const option = document.createElement('option');
-        option.value = server;
-        option.textContent = `${server} (${databaseCounts[server]})`;
-        databaseFilter.appendChild(option);
-    });
-
-    // Ensure only one event listener is attached
-    const handleChange = () => {
-        filterResultsByDatabase();
-    };
-
-    // Remove existing event listener to prevent multiple attachments
-    databaseFilter.removeEventListener('change', handleChange);
-
-    // Add event listener to handle selection changes
-    databaseFilter.addEventListener('change', handleChange);
-}
-
-
-//sorting results alphabetically
-function sortResults(data) {
-    return data.slice().sort((a, b) => {
-        // Handle cases where defaultDisplayName might be undefined
-        const nameA = (a.defaultDisplayName || '').toLowerCase();
-        const nameB = (b.defaultDisplayName || '').toLowerCase();
-
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const showResults = sessionStorage.getItem('showResults');
-    const searchResults = sessionStorage.getItem('searchResults');
-    const searchQuery = sessionStorage.getItem('searchQuery');
-
-    if (showResults === 'true' && searchResults) {
-        const results = JSON.parse(searchResults);
-        populateDatabaseFilterOptions(results); // Initialize filter options once
-        displayResults(searchQuery, results);
-    }
-
-    // Handle sorting button
-    const sortButton = document.getElementById('sort-button');
-    if (sortButton) {
-        sortButton.addEventListener('click', function() {
-            // Toggle sorting state
-            isSorted = !isSorted;
-
-            // Retrieve results from sessionStorage
-            const results = JSON.parse(sessionStorage.getItem('searchResults'));
-
-            if (results) {
-                // Display results with new sorting state
-                displayResults(sessionStorage.getItem('searchQuery'), results);
-            }
-        });
-    } else {
-        console.error('Element with ID "sort-button" not found.');
-    }
-
-    // Attach event listener for database filter selection
-    const databaseFilter = document.getElementById('databaseFilter');
-    if (databaseFilter) {
-        databaseFilter.addEventListener('change', filterResultsByDatabase);
-    } else {
-        console.error('Element with ID "databaseFilter" not found.');
-    }
-});
 
