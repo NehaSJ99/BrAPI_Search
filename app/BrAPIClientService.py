@@ -34,7 +34,7 @@ def getGermplasmSearch(search_param, base_url):
 
 def getGermplasmPedigree(germplasm_id, base_url):
     #print("In getGermplasmPedigree function...")
-    url = f"{base_url}/germplasm/{germplasm_id}/pedigree"
+    url = f"{base_url}germplasm/{germplasm_id}/pedigree"
     #print(f'url : {url}')
     try:
         res = requests.get(url)

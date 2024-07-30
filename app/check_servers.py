@@ -16,7 +16,7 @@ except json.JSONDecodeError:
     logging.error("Error decoding JSON from environment variable 'SERVERS_INFO_JSON'")
 
 # Set up logging
-log_file = '/data/htdocs/brapi_flask/app/check_servers.log'
+log_file = 'check_servers.log'
 if not os.path.exists(os.path.dirname(log_file)):
     os.makedirs(os.path.dirname(log_file))
 
@@ -41,7 +41,7 @@ def update_server_info():
             'server_status': status
         }
     
-    file_path = '/data/htdocs/brapi_flask/app/server_info.json'
+    file_path = 'server_info.json'
     try:
         with open(file_path, 'w') as f:
             json.dump(updated_info, f, indent=4)

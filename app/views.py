@@ -1,38 +1,43 @@
-from flask import request, render_template, Blueprint, jsonify, json
+from flask import request, render_template, Blueprint, jsonify, json, url_for, redirect
 import logging
+from logging.handlers import RotatingFileHandler
 from .BrAPIClientService import getGermplasmSearch, search_trait, search_trial, getGermplasmPedigree, getGermplasmProgeny
-from .BrAPIs import fetch_server_apis
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
 
 main = Blueprint("main", __name__)
 
+# Initialize MongoDB client
+myclient = MongoClient('mongodb://localhost:27017')
+if myclient:
+    logging.info(f"Connection established with string : {myclient}")
+else:
+    logging.info("Not abble to established a connection with mongo server")
+db = myclient["brapidata"]
+print(db)
+
+#loading the server's info
 def load_server_info():
-    file_path = '/data/htdocs/brapi_flask/app/server_info.json'
+    file_path = 'server_info.json'
     try:
         with open(file_path, 'r') as f:
             server_info = json.load(f)
+            logging.info(f"Server info loaded: {server_info}")
         return server_info
     except Exception as e:
-        print(f"Error loading server info: {e}")
+        logging.info(f"Error loading server info: {e}")
         return {}
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)  # Set log level as needed
 
-# Initialize MongoDB client
-myclient = MongoClient('mongodb://127.0.0.1:27017')
-if myclient:
-    print(f"Connection established with string : {myclient}")
-else:
-    print("Not abble to established a connection with mongo server")
-db = myclient["brapidata"]
-print(db)
 
 @main.route("/", methods=['GET', 'POST'])
 def index():
     server_info = load_server_info()
+    logging.info(f"Server info: {server_info}")
+    print('*******')
     print(server_info)
     return render_template("index.html", server_info=server_info)
 
@@ -96,6 +101,15 @@ def search():
                     elif 't3_wheat' in collection_name:
                         server_title = server_info['T3/Wheat']['server-title']
                         base_url = server_info['T3/Wheat']['api-urls'][0]
+                    elif 'gatersleben_germplasm' in collection_name:
+                        server_title = server_info['IPK Gatersleben']['server-title']
+                        base_url = server_info['IPK Gatersleben']['api-urls'][0]
+                    elif 'urgi' in collection_name:
+                        server_title = server_info['URGI']['server-title']
+                        base_url = server_info['URGI']['api-urls'][0]
+                    elif 'graingenes' in collection_name:
+                        server_title = server_info['GrainGenes']['server-title']
+                        base_url = server_info['GrainGenes']['api-urls'][0]
                     else:
                         server_title = server
                         base_url = ''  # Default base URL if not found in the dictionary
@@ -119,6 +133,7 @@ def details(detail_type, detail_id):
     logging.info(f"Detail Type: {detail_type}, Detail ID: {detail_id}")
     base_url = request.args.get("base_url")
     server_name = request.args.get("server_name")
+    print(f'base_url:{base_url}')
     
     if detail_type and detail_id and base_url:
         if detail_type == "germplasm":
@@ -128,14 +143,24 @@ def details(detail_type, detail_id):
                 
                 # Determine pedigree and progeny availability
                 pedigree_info = getGermplasmPedigree(detail_id, base_url)
-                has_pedigree = bool(pedigree_info.get('siblings'))
-                searched_results_germplasm['pedigree'] = 'Yes' if has_pedigree else 'No'
+                print(f'pedigree Info : {pedigree_info}')
+                if pedigree_info:
+                    has_pedigree = bool(pedigree_info.get('siblings'))
+                    print(f'has_pedigree:{has_pedigree}')
+                    searched_results_germplasm['pedigree'] = 'Yes' if has_pedigree else 'No'
+                else:
+                    return render_template("details.html", sample=searched_results_germplasm, detail_type=detail_type, server_name=server_name)
 
                 progeny_info = getGermplasmProgeny(detail_id, base_url)
-                has_progeny = bool(progeny_info.get('progeny'))
-                searched_results_germplasm['progeny'] = 'Yes' if has_progeny else 'No'
+                if progeny_info:
+                    has_progeny = bool(progeny_info.get('progeny'))
+                    searched_results_germplasm['progeny'] = 'Yes' if has_progeny else 'No'
+                else:
+                    return render_template("details.html", sample=searched_results_germplasm, detail_type=detail_type, server_name=server_name)
+                
 
                 logging.info(f"Germplasm Details found for : {detail_id}")
+                logging.info(f'Details ; {searched_results_germplasm}')
                 logging.info("3. Displaying details on Details page")
                 return render_template("details.html", sample=searched_results_germplasm, detail_type=detail_type, server_name=server_name, has_pedigree=has_pedigree, has_progeny=has_progeny)
         
@@ -149,6 +174,7 @@ def details(detail_type, detail_id):
 
         if searched_results:
             logging.info(f"Germplasm Details found for : {detail_id}")
+            logging.info(f'Details ; {searched_results}')
             logging.info("3. Displaying results on Details page")
             return render_template("details.html", sample=searched_results, detail_type=detail_type, server_name=server_name)
     
@@ -166,11 +192,13 @@ def germplasm_pedigree(germplasm_id):
         pedigree_info = getGermplasmPedigree(germplasm_id, base_url)
         if pedigree_info:
             logging.info(f"Pedigree Information found for : {germplasm_id}")
+            logging.info(pedigree_info)
             logging.info(f"Going on pedigree page")
             return render_template("pedigree.html", pedigree=pedigree_info, detail_type='germplasm', detail_id=germplasm_id, germplasm_name=germplasm_name, base_url=base_url, server_name=server_name)
     
     logging.warning("Pedigree information not found")
     return render_template("404.html")
+
 
 @main.route("/germplasm/<germplasm_id>/progeny")
 def germplasm_progeny(germplasm_id):
@@ -179,11 +207,11 @@ def germplasm_progeny(germplasm_id):
     server_name = request.args.get("server_name")
     germplasm_name = request.args.get("germplasm_name")
 
-    print(germplasm_name)
     if germplasm_id and base_url:
         progeny_info = getGermplasmProgeny(germplasm_id, base_url)
         if progeny_info:
             logging.info(f"Progeny Information found for : {germplasm_id}")
+            logging.info(progeny_info)
             logging.info(f"Going on progeny page")
             return render_template("progeny.html", progeny=progeny_info, detail_type='germplasm', detail_id=germplasm_id, germplasm_name=germplasm_name, base_url=base_url, server_name=server_name)
     

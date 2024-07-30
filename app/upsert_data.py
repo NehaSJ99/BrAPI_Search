@@ -15,7 +15,7 @@ def load_server_info():
     
     # List of environment variable names for server info
     #env_vars = ['SERVER_INFO_T3_WHEAT', 'SERVER_INFO_T3_BARLEY', 'SERVER_INFO_T3_OAT']
-    env_vars = ['SERVER_INFO_T3_OAT']
+    env_vars = ['SERVER_INFO_URGI']
     
     for var in env_vars:
         server_info_json = os.getenv(var, '{}')
@@ -65,10 +65,11 @@ def fetch_data(api_url):
     all_data = []
     total_count = 0  # Initialize total_count
     data_fetched = 0  # Initialize data_fetched
+    delay = 5  # Set the delay time in seconds
     
     while page < total_pages:
         print(f'Fetching page: {page}')
-        url = f"{api_url}?page={page}&pageSize=5000"
+        url = f"{api_url}?page={page}&pageSize=1000"
         print(f'URL: {url}')
         try:
             response = requests.get(url, verify=False)  # Disable SSL certificate verification
@@ -90,6 +91,9 @@ def fetch_data(api_url):
                 # Stop fetching if all pages are retrieved
                 if data_fetched >= total_count:
                     break
+
+                # Add a delay before fetching the next page
+                time.sleep(delay)
 
             else:
                 print(f"Error fetching data: {response.status_code} {response.reason}")

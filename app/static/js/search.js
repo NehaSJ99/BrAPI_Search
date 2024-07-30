@@ -3,13 +3,28 @@ let currentSearchResults = [];
 let currentSearchQuery = '';
 let resultsPerPage = 10; // Number of results per page
 let currentPage = 1; // Current page number
+let isSorted = false; // Initial sorting state
+let allFilterOptions = {}; // Store all unique filter options
+let originalSearchResults = []; // Add this line to store the original results
 
 const serverLinks = {
     'T3/Barley': 'https://barley.triticeaetoolbox.org/',
     'T3/Wheat': 'https://wheat.triticeaetoolbox.org/',
     'T3/Oat': 'https://oat.triticeaetoolbox.org/',
+    'IPK Gatersleben': 'https://www.ipk-gatersleben.de/',
+    'URGI' : 'https://urgi.versailles.inra.fr/',
+    'GrainGenes' : 'https://graingenes.org/GG3/',
     // Add more mappings as needed
 };
+
+// Functions to show and hide the spinner
+function showSpinner() {
+    document.getElementById('loading-spinner').style.display = 'flex';
+}
+
+function hideSpinner() {
+    document.getElementById('loading-spinner').style.display = 'none';
+}
 
 function performSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -17,6 +32,9 @@ function performSearch(event) {
     if (!validateForm()) {
         return;
     }
+
+    // Show the spinner before starting the search
+    showSpinner();
 
     // Prepare data to send in the POST request
     const formData = new FormData();
@@ -46,12 +64,31 @@ function performSearch(event) {
         console.error('Error fetching search results:', error);
         document.getElementById('results-container').innerHTML = 'An error occurred while fetching results.';
         document.getElementById('results-container').style.display = 'block';
+    })
+    .finally(() => {
+        // Hide the spinner after the search is complete, regardless of success or failure
+        hideSpinner();
     });
 }
 
+// Functions to show and hide the spinner
+function showSpinner() {
+    document.getElementById('loading-spinner').style.display = 'flex';
+}
+
+function hideSpinner() {
+    document.getElementById('loading-spinner').style.display = 'none';
+}
+
+// Modify displayResults to include a call to populateDatabaseFilterOptions
 function displayResults(query, data) {
     currentSearchResults = data;
     currentSearchQuery = query;
+
+    // Store the original data if it hasn't been stored yet
+    if (originalSearchResults.length === 0) {
+        originalSearchResults = [...data]; // Use spread operator to copy array
+    }
 
     console.log('Total count:', data.totalCount); // Check total count
     console.log('Total Results:', data.length);
@@ -67,15 +104,17 @@ function displayResults(query, data) {
         console.error('Element with ID "search-term-display" not found.');
     }
 
-
     // Handle the results (count, etc.)
     const resultsCount = document.getElementById('results-count');
     resultsCount.innerHTML = data.length === 0 ? 'No results found.' : `${data.length} result(s) found`;
 
+    // Sort results if isSorted is true
+    const resultsToDisplay = isSorted ? sortResults(data) : data;
+
     // Display results for the current page
     const startIndex = (currentPage - 1) * resultsPerPage;
     const endIndex = Math.min(startIndex + resultsPerPage, data.length);
-    const currentResults = data.slice(startIndex, endIndex);
+    const currentResults = resultsToDisplay .slice(startIndex, endIndex);
 
     // Create table for results
     const table = document.createElement('table');
@@ -104,7 +143,7 @@ function displayResults(query, data) {
 
         if (sample.germplasmDbId) {
             url = `/details/germplasm/${sample.germplasmDbId}?base_url=${encodeURIComponent(sample.base_url)}&server_name=${encodeURIComponent(sample.server_name)}`;
-            resultCell.innerHTML = `<a href="${url}" target="_blank">${sample.defaultDisplayName} (${sample.species})</a>`;
+            resultCell.innerHTML = `<a href="${url}" target="_blank">${sample.germplasmDbId} (${sample.species})</a>`;
         } else if (sample.traitDbId) {
             url = `/details/trait/${sample.traitDbId}?base_url=${encodeURIComponent(sample.base_url)}&server_name=${encodeURIComponent(sample.server_name)}`;
             resultCell.innerHTML = `<a href="${url}" target="_blank">${sample.traitName} (Trait ID: ${sample.traitDbId})</a>`;
@@ -219,6 +258,73 @@ function createPaginationControls(totalResults) {
     paginationContainer.appendChild(nextButton);
 }
 
+function filterResultsByDatabase() {
+    const databaseFilter = document.getElementById('databaseFilter');
+    const selectedOptions = Array.from(databaseFilter.selectedOptions).map(option => option.value);
+
+    console.log('Selected filters:', selectedOptions); // Debug log
+
+    // Filter results based on selected options
+    const filteredResults = selectedOptions.includes('all') || selectedOptions.length === 0
+        ? originalSearchResults
+        : originalSearchResults.filter(result => selectedOptions.includes(result.server_name));
+
+    console.log('Filtered results:', filteredResults); // Debug log
+
+    // Display the filtered results
+    displayResults(currentSearchQuery, filteredResults);
+}
+
+
+function populateDatabaseFilterOptions(data) {
+    const databaseFilter = document.getElementById('databaseFilter');
+    const databaseCounts = {};
+
+    // Count the occurrences of each server
+    data.forEach(result => {
+        if (databaseCounts[result.server_name]) {
+            databaseCounts[result.server_name]++;
+        } else {
+            databaseCounts[result.server_name] = 1;
+        }
+    });
+
+    // Clear existing options
+    databaseFilter.innerHTML = '<option value="all">Filter by Server</option>';
+
+    // Add new options
+    Object.keys(databaseCounts).forEach(server => {
+        const option = document.createElement('option');
+        option.value = server;
+        option.textContent = `${server} (${databaseCounts[server]})`;
+        databaseFilter.appendChild(option);
+    });
+
+    // Ensure only one event listener is attached
+    const handleChange = () => {
+        filterResultsByDatabase();
+    };
+
+    // Remove existing event listener to prevent multiple attachments
+    databaseFilter.removeEventListener('change', handleChange);
+
+    // Add event listener to handle selection changes
+    databaseFilter.addEventListener('change', handleChange);
+}
+
+
+//sorting results alphabetically
+function sortResults(data) {
+    return data.slice().sort((a, b) => {
+        // Handle cases where defaultDisplayName might be undefined
+        const nameA = (a.defaultDisplayName || '').toLowerCase();
+        const nameB = (b.defaultDisplayName || '').toLowerCase();
+
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const showResults = sessionStorage.getItem('showResults');
@@ -227,6 +333,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (showResults === 'true' && searchResults) {
         const results = JSON.parse(searchResults);
+        populateDatabaseFilterOptions(results); // Initialize filter options once
         displayResults(searchQuery, results);
     }
+
+    // Handle sorting button
+    const sortButton = document.getElementById('sort-button');
+    if (sortButton) {
+        sortButton.addEventListener('click', function() {
+            // Toggle sorting state
+            isSorted = !isSorted;
+
+            // Retrieve results from sessionStorage
+            const results = JSON.parse(sessionStorage.getItem('searchResults'));
+
+            if (results) {
+                // Display results with new sorting state
+                displayResults(sessionStorage.getItem('searchQuery'), results);
+            }
+        });
+    } else {
+        console.error('Element with ID "sort-button" not found.');
+    }
+
+    // Attach event listener for database filter selection
+    const databaseFilter = document.getElementById('databaseFilter');
+    if (databaseFilter) {
+        databaseFilter.addEventListener('change', filterResultsByDatabase);
+    } else {
+        console.error('Element with ID "databaseFilter" not found.');
+    }
 });
+

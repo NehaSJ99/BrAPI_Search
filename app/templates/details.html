@@ -14,6 +14,18 @@
             list-style-type: none;
             padding-left: 0;
         }
+        .custom-disabled {
+        background-color: #6c757d !important; /* Grey background */
+        border-color: #6c757d !important;     /* Grey border */
+        color: #fff !important;               /* White text color */
+        cursor: not-allowed !important;       /* Cursor style to indicate the button is not clickable */
+        opacity: 0.65 !important;             /* Slightly reduced opacity for a disabled look */
+        pointer-events: none !important;      /* Prevent interactions */
+        text-decoration: none !important;     /* Remove underline if any */
+        }
+        .custom-table td, .custom-table th {
+            padding: 0.10rem; /* Adjust the padding value as needed */
+        }
     </style>
 </head>
 <body>
@@ -28,8 +40,8 @@
                 <!-- Dynamic Heading -->
                 <h3 class="card-title text-center mt-1">
                     Details of 
-                    {% if sample.defaultDisplayName %}
-                        {{ sample.defaultDisplayName }}
+                    {% if sample.germplasmDbId %}
+                        {{ sample.germplasmDbId }}
                     {% elif sample.traitName %}
                         {{ sample.traitName }}
                     {% elif sample.trialName %}
@@ -53,35 +65,53 @@
                                             <table class="table table-sm table-bordered">
                                                 <thead>
                                                     <tr>
-                                                        <th>Reference ID</th>
                                                         <th>Reference Source</th>
+                                                        <th>Reference ID</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {% for ref in value %}
                                                         <tr>
-                                                            <td>{{ ref.referenceId }}</td>
                                                             <td>{{ ref.referenceSource }}</td>
+                                                            <td>{{ ref.referenceId }}</td>
                                                         </tr>
                                                     {% endfor %}
                                                 </tbody>
                                             </table>
                                         {% elif key == 'ontologyReference' %}
-                                        <!-- Subtable for ontologyReference -->
-                                        <table class="table table-sm table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>ontologyName</th>
-                                                    <th>ontologyDbId</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>{{ value.ontologyName }}</td>
-                                                    <td>{{ value.ontologyDbId }}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                            <!-- Subtable for ontologyReference -->
+                                            <table class="table table-sm table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ontologyName</th>
+                                                        <th>ontologyDbId</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>{{ value.ontologyName }}</td>
+                                                        <td>{{ value.ontologyDbId }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        {% elif key == 'additionalInfo' %}
+                                            <!-- Subtable for additionalProps -->
+                                            <table class="table table-sm table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Property</th>
+                                                        <th>Value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for prop_key, prop_value in value.additionalProps.items() %}
+                                                    <tr>
+                                                        <td>{{ prop_key }}</td>
+                                                        <td>{{ prop_value }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
                                         {% elif value is mapping %}
                                             <ul>
                                                 {% for sub_key, sub_value in value.items() %}
@@ -107,11 +137,11 @@
                 {% if sample.germplasmDbId %}
                     <div class="mt-4 text-center">
                         <a href="{{ url_for('main.germplasm_pedigree', germplasm_id=sample.germplasmDbId, base_url=sample.base_url, server_name=server_name, germplasm_name=sample.defaultDisplayName) }}"
-                           class="btn btn-primary {% if not has_pedigree %}disabled{% endif %}"
+                           class="btn btn-primary {% if not has_pedigree %}custom-disabled{% endif %}"
                            {% if not has_pedigree %}tabindex="-1" aria-disabled="true"{% endif %}>Check Pedigree</a>
 
                         <a href="{{ url_for('main.germplasm_progeny', germplasm_id=sample.germplasmDbId, base_url=sample.base_url, server_name=server_name, germplasm_name=sample.defaultDisplayName) }}"
-                           class="btn btn-primary {% if not has_progeny %}disabled{% endif %}"
+                           class="btn btn-primary {% if not has_progeny %}custom-disabled{% endif %}"
                            {% if not has_progeny %}tabindex="-1" aria-disabled="true"{% endif %}>Check Progeny</a>
                     </div>
                 {% endif %}

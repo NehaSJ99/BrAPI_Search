@@ -1,0 +1,54 @@
+{
+    "T3/Wheat": {
+        "server-title": "T3/Wheat",
+        "api-urls": [
+            "https://wheat.triticeaetoolbox.org/brapi/v2/"
+        ],
+        "auth-required": false,
+        "server_status": true,
+        "last_updated": "7/27/2024, 11:00:07 PM"
+    },
+    "T3/Barley": {
+        "server-title": "T3/Barley",
+        "api-urls": [
+            "https://barley.triticeaetoolbox.org/brapi/v2/"
+        ],
+        "auth-required": false,
+        "server_status": true,
+        "last_updated": "7/27/2024, 11:00:07 PM"
+    },
+    "T3/Oat": {
+        "server-title": "T3/Oat",
+        "api-urls": [
+            "https://oat.triticeaetoolbox.org/brapi/v2/"
+        ],
+        "auth-required": false,
+        "server_status": true,
+        "last_updated": "7/27/2024, 11:00:07 PM"
+    },
+    "IPK Gatersleben": {
+        "server-title": "IPK Gatersleben",
+        "api-urls": [
+            "https://webapps.ipk-gatersleben.de/api/brapi/v1/"
+        ],
+        "auth-required": false,
+        "server_status": true,
+        "last_updated": "7/27/2024, 11:00:07 PM"
+    },
+    "URGI": {
+        "server-title": "URGI",
+        "api-urls": [
+            "https://urgi.versailles.inra.fr/faidare/brapi/v1/"
+        ],
+        "auth-required": false,
+        "server_status": false
+    },
+    "GrainGenes":{
+       "server-title": "GrainGenes",
+        "api-urls": [
+            "None"
+        ],
+        "auth-required": false,
+        "server_status": false 
+    }
+}
