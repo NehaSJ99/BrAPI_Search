@@ -15,7 +15,7 @@ if myclient:
 else:
     logging.info("Not abble to established a connection with mongo server")
 db = myclient["brapidata"]
-print(db)
+#print(db)
 
 #loading the server's info
 def load_server_info():
@@ -37,8 +37,8 @@ logging.basicConfig(level=logging.INFO)  # Set log level as needed
 def index():
     server_info = load_server_info()
     logging.info(f"Server info: {server_info}")
-    print('*******')
-    print(server_info)
+    #print('*******')
+    #print(server_info)
     return render_template("index.html", server_info=server_info)
 
 @main.route('/about') 
@@ -133,7 +133,7 @@ def details(detail_type, detail_id):
     logging.info(f"Detail Type: {detail_type}, Detail ID: {detail_id}")
     base_url = request.args.get("base_url")
     server_name = request.args.get("server_name")
-    print(f'base_url:{base_url}')
+    #print(f'base_url:{base_url}')
     
     if detail_type and detail_id and base_url:
         if detail_type == "germplasm":
@@ -143,10 +143,10 @@ def details(detail_type, detail_id):
                 
                 # Determine pedigree and progeny availability
                 pedigree_info = getGermplasmPedigree(detail_id, base_url)
-                print(f'pedigree Info : {pedigree_info}')
+                #print(f'pedigree Info : {pedigree_info}')
                 if pedigree_info:
                     has_pedigree = bool(pedigree_info.get('siblings'))
-                    print(f'has_pedigree:{has_pedigree}')
+                    #print(f'has_pedigree:{has_pedigree}')
                     searched_results_germplasm['pedigree'] = 'Yes' if has_pedigree else 'No'
                 else:
                     return render_template("details.html", sample=searched_results_germplasm, detail_type=detail_type, server_name=server_name)
@@ -180,7 +180,6 @@ def details(detail_type, detail_id):
     
     logging.warning("Sample not found")
     return render_template("404.html")
-
 
 @main.route("/germplasm/<germplasm_id>/pedigree")
 def germplasm_pedigree(germplasm_id):

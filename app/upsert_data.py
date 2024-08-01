@@ -74,11 +74,14 @@ def fetch_data(api_url):
         try:
             response = requests.get(url, verify=False)  # Disable SSL certificate verification
             response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-            print(response.status_code)
+            print(f'response code: {response.status_code}')
             
             if response.status_code == 200:
+                #print('In a if loop')
                 data = response.json()
+                #print(f'data : {data}')
                 page_data = data.get('result', {}).get('data', [])
+                #print(f'page data : {page_data}')
                 all_data.extend(page_data)
                 data_fetched = len(all_data)
                 
@@ -123,6 +126,8 @@ def insert_data(data, collection_name, logger):
     current_time = datetime.now()
     for item in data:
         item["updated_at"] = current_time
+
+    print(f'data : {data}')
 
     # Insert new data
     result = collection.insert_many(data, ordered=False)
