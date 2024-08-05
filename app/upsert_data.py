@@ -15,7 +15,7 @@ def load_server_info():
     
     # List of environment variable names for server info
     #env_vars = ['SERVER_INFO_T3_WHEAT', 'SERVER_INFO_T3_BARLEY', 'SERVER_INFO_T3_OAT']
-    env_vars = ['SERVER_INFO_URGI']
+    env_vars = ['SERVER_INFO_GRAINGENES']
     
     for var in env_vars:
         server_info_json = os.getenv(var, '{}')
@@ -69,7 +69,7 @@ def fetch_data(api_url):
     
     while page < total_pages:
         print(f'Fetching page: {page}')
-        url = f"{api_url}?page={page}&pageSize=1000"
+        url = f"{api_url}?page={page}&pagesize=10000"
         print(f'URL: {url}')
         try:
             response = requests.get(url, verify=False)  # Disable SSL certificate verification
@@ -85,8 +85,10 @@ def fetch_data(api_url):
                 all_data.extend(page_data)
                 data_fetched = len(all_data)
                 
-                total_pages = data.get('metadata', {}).get('pagination', {}).get('totalPages', total_pages)
-                total_count = data.get('metadata', {}).get('pagination', {}).get('totalCount', total_count)
+                #total_pages = data.get('metadata', {}).get('pagination', {}).get('totalPages', total_pages)
+                total_pages = 10
+                #total_count = data.get('metadata', {}).get('pagination', {}).get('totalCount', total_count)
+                total_count = 10000
                 page += 1
                 print(f'Total pages: {total_pages}')
                 print(f'Total count: {total_count}')
@@ -127,7 +129,7 @@ def insert_data(data, collection_name, logger):
     for item in data:
         item["updated_at"] = current_time
 
-    print(f'data : {data}')
+    #print(f'data : {data}')
 
     # Insert new data
     result = collection.insert_many(data, ordered=False)

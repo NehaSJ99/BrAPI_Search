@@ -4,6 +4,7 @@ from logging.handlers import RotatingFileHandler
 from .BrAPIClientService import getGermplasmSearch, search_trait, search_trial, getGermplasmPedigree, getGermplasmProgeny
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import requests
 
 
 main = Blueprint("main", __name__)
@@ -38,7 +39,7 @@ def index():
     server_info = load_server_info()
     logging.info(f"Server info: {server_info}")
     #print('*******')
-    #print(server_info)
+    print(server_info)
     return render_template("index.html", server_info=server_info)
 
 @main.route('/about') 
@@ -74,7 +75,7 @@ def search():
     # Define the search fields for different search types
     search_fields = {
         "traits": ["traitName", "traitDbId"],
-        "germplasm": ["genus", "germplasmDbId", "germplasmName", "species", "defaultDisplayName", "accessionNumber"],
+        "germplasm": ["genus", "germplasmDbId", "germplasmName", "species", "defaultDisplayName", "accessionNumber","synonyms"],
         "trials": ["trialName", "trialDbId", "programName", "programDbId", "commonCropName"]
     }
 
@@ -133,36 +134,43 @@ def details(detail_type, detail_id):
     logging.info(f"Detail Type: {detail_type}, Detail ID: {detail_id}")
     base_url = request.args.get("base_url")
     server_name = request.args.get("server_name")
-    #print(f'base_url:{base_url}')
+    print(f'base_url:{base_url}')
     
     if detail_type and detail_id and base_url:
         if detail_type == "germplasm":
             searched_results_germplasm = getGermplasmSearch(detail_id, base_url)
+            print(f'searched_results_germplasm in Details page : {searched_results_germplasm}')
             if searched_results_germplasm:
                 searched_results_germplasm['base_url'] = base_url  # Ensure base_url is set for each result
                 
-                # Determine pedigree and progeny availability
-                pedigree_info = getGermplasmPedigree(detail_id, base_url)
-                #print(f'pedigree Info : {pedigree_info}')
-                if pedigree_info:
-                    has_pedigree = bool(pedigree_info.get('siblings'))
-                    #print(f'has_pedigree:{has_pedigree}')
-                    searched_results_germplasm['pedigree'] = 'Yes' if has_pedigree else 'No'
+                # Check if pedigree endpoint exists
+                if check_endpoint_exists(base_url, f"{detail_id}/pedigree"):
+                    pedigree_info = getGermplasmPedigree(detail_id, base_url)
+                    if pedigree_info:
+                        print(f'pedigree_info : {pedigree_info}')
+                        has_pedigree = bool(pedigree_info.get('siblings'))
+                        searched_results_germplasm['pedigree'] = 'Yes' if has_pedigree else 'No'
+                    else:
+                        searched_results_germplasm['pedigree'] = 'No'
                 else:
-                    return render_template("details.html", sample=searched_results_germplasm, detail_type=detail_type, server_name=server_name)
+                    searched_results_germplasm['pedigree'] = 'Not Available'
 
-                progeny_info = getGermplasmProgeny(detail_id, base_url)
-                if progeny_info:
-                    has_progeny = bool(progeny_info.get('progeny'))
-                    searched_results_germplasm['progeny'] = 'Yes' if has_progeny else 'No'
+                # Check if progeny endpoint exists
+                if check_endpoint_exists(base_url, f"{detail_id}/progeny"):
+                    progeny_info = getGermplasmProgeny(detail_id, base_url)
+                    if progeny_info:
+                        has_progeny = bool(progeny_info.get('progeny'))
+                        searched_results_germplasm['progeny'] = 'Yes' if has_progeny else 'No'
+                    else:
+                        searched_results_germplasm['progeny'] = 'No'
                 else:
-                    return render_template("details.html", sample=searched_results_germplasm, detail_type=detail_type, server_name=server_name)
-                
+                    searched_results_germplasm['progeny'] = 'Not Available'
 
                 logging.info(f"Germplasm Details found for : {detail_id}")
                 logging.info(f'Details ; {searched_results_germplasm}')
                 logging.info("3. Displaying details on Details page")
-                return render_template("details.html", sample=searched_results_germplasm, detail_type=detail_type, server_name=server_name, has_pedigree=has_pedigree, has_progeny=has_progeny)
+                return render_template("details.html", sample=searched_results_germplasm, detail_type=detail_type, server_name=server_name, 
+                                       has_pedigree=searched_results_germplasm['pedigree'], has_progeny=searched_results_germplasm['progeny'])
         
         elif detail_type == "trait":
             searched_results = search_trait(detail_id, base_url)
@@ -216,3 +224,27 @@ def germplasm_progeny(germplasm_id):
     
     logging.warning("Progeny information not found")
     return render_template("404.html")
+
+import requests
+import logging
+
+def check_endpoint_exists(base_url, endpoint):
+    full_url = f"{base_url}{endpoint}"
+    print(f'full_url: {full_url}')
+    try:
+        response = requests.get(full_url)  # Use GET request to fetch the response body
+        if response.status_code == 200:
+            try:
+                # Attempt to parse the response as JSON
+                response_json = response.json()
+                return True
+            except ValueError as e:
+                logging.error(f"Error decoding JSON from {full_url}: {e}")
+                return False
+        else:
+            logging.warning(f"Non-200 status code {response.status_code} from {full_url}")
+            return False
+    except requests.RequestException as e:
+        logging.error(f"Error checking endpoint {full_url}: {e}")
+        return False
+

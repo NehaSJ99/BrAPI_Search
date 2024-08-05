@@ -46,9 +46,10 @@
     "GrainGenes":{
        "server-title": "GrainGenes",
         "api-urls": [
-            "None"
+            "https://graingenes.org/GG4/brapi/v2/"
         ],
         "auth-required": false,
-        "server_status": false 
+        "server_status": true,
+        "last_updated": "8/1/2024, 09:50:07 AM"
     }
 }
