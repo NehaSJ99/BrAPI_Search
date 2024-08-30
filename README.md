@@ -68,7 +68,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 For any questions or feedback, please reach out to:
 
-- **Neha Jagtap** - [nehajagtap549@gmail.com](mailto:nehajagtap549@gmail.com)
+- **Neha Jagtap** - [njagtap@ncsu.edu](mailto:njagtap@ncsu.edu)
 
 Feel free to open issues or create discussions for any questions or suggestions.
 
